@@ -29,7 +29,7 @@ int main (int argc, char **argv)
 	{
 		tok = yylex();
 		if(!running) break;
-		fprintf(stdout, "%s: \t ", yytext);
+		fprintf(stdout, "%s: \n ", yytext);
 		switch(tok)
 		{
 			case KW_BYTE: fprintf(stdout, "KW_BYTE "); break;

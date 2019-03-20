@@ -1,9 +1,15 @@
 
 %{
 #include "tokens.h"
+
 int lineNumber = 1;
 int running = 1; 
+
 %}
+
+INTEGER [OIHGFEDCBA]+
+IDENTIFIER ([a-z0-9]|_)+
+STRING \"(\\.|[^\\"])*\"
 
 %x COMMENT 
 
@@ -26,10 +32,11 @@ int running = 1;
 ">="				{ return OPERATOR_GE; }
 "=="				{ return OPERATOR_EQ; }
 "!="				{ return OPERATOR_DIF; }
-([a-z0-9]|_)+			{ return TK_IDENTIFIER; }
-[OIHGFEDCBA]+			{ return LIT_INTEGER; }
-[OIHGFEDCBA]+"."[OIHGFEDCBA]+	{ return LIT_FLOAT; }		
+{IDENTIFIER}			{ return TK_IDENTIFIER; }
+{INTEGER}			{ return LIT_INTEGER; }
+{INTEGER}"."{INTEGER}		{ return LIT_FLOAT; }		
 ['].[']				{ return LIT_CHAR; }
+{STRING}			{ return LIT_STRING; }
 "ZZ".*				
 "XXX"				{ BEGIN(COMMENT); }
 <COMMENT>"XXX"			{ BEGIN(INITIAL); }
