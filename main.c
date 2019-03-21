@@ -1,16 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "tokens.h"
+#include "hash.h"
 
 extern int running;
 extern int lineNumber;
 int yylex();
 extern char* yytext;
 extern FILE *yyin;
-
-
-//int lineNumber = 1;
-//int running = 1;
 
 int main (int argc, char **argv)
 {
@@ -24,11 +21,14 @@ int main (int argc, char **argv)
 		fprintf(stderr, "Cannot open file\n");
 		exit(2);
 	}
+	hashInit();
+	//hashPrint();
 	int tok = 0;
 	while (running)
 	{
 		tok = yylex();
 		if(!running) break;
+		hashPrint();
 		fprintf(stdout, "%s: \n ", yytext);
 		switch(tok)
 		{
@@ -56,7 +56,7 @@ int main (int argc, char **argv)
 			case LIT_FLOAT: fprintf(stdout, "LIT_FLOAT "); break;
 			case LIT_CHAR: fprintf(stdout, "LIT_CHAR "); break;
 			case LIT_STRING: fprintf(stdout, "LIT_STRING "); break;
-			default: fprintf(stdout, "UNKNOWN "); break;
+			default: fprintf(stdout, "UNKNOWN: %d", tok); break;
 		}
 	}
 }

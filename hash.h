@@ -9,7 +9,7 @@ typedef struct hash_node
 
 
 NODE *Table[HASH_SIZE];
-void hashInt(void);
+void hashInit(void);
 void hashPrint(void);
 NODE *hashInsert(int type, char *text);
 int hashAddress(char *text);
