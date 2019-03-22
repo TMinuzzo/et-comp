@@ -9,6 +9,10 @@ int yylex();
 extern char* yytext;
 extern FILE *yyin;
 
+int isRunning(void);
+int getLineNumber(void);
+void initMe(void);
+
 int main (int argc, char **argv)
 {
 	if(argc < 2)
@@ -21,21 +25,20 @@ int main (int argc, char **argv)
 		fprintf(stderr, "Cannot open file\n");
 		exit(2);
 	}
-	hashInit();
-	//hashPrint();
+	initMe();
 	int tok = 0;
 	while (running)
 	{
 		tok = yylex();
-		if(!running) break;
-		hashPrint();
+		if(!isRunning) break;
+		
 		fprintf(stdout, "%s: \n ", yytext);
 		switch(tok)
 		{
 			case KW_BYTE: fprintf(stdout, "KW_BYTE "); break;
 			case KW_INT: fprintf(stdout, "KW_INT "); break;
 			case KW_FLOAT: fprintf(stdout, "KW_FLOAT "); break;
-			case KW_IF: fprintf(stdout, "KW_IF "); break;
+			case KW_IF: fprintf(stdout, "KW_IF"); break;
 			case KW_THEN: fprintf(stdout, "KW_THEN "); break;	
 			case KW_ELSE: fprintf(stdout, "KW_ELSE "); break;
 			case KW_LOOP: fprintf(stdout, "KW_LOOP "); break;
@@ -55,9 +58,10 @@ int main (int argc, char **argv)
 			case LIT_INTEGER: fprintf(stdout, "LIT_INTEGER "); break;
 			case LIT_FLOAT: fprintf(stdout, "LIT_FLOAT "); break;
 			case LIT_CHAR: fprintf(stdout, "LIT_CHAR "); break;
-			case LIT_STRING: fprintf(stdout, "LIT_STRING "); break;
+			case LIT_STRING: fprintf(stdout, "LIT_STRING"); break;
 			default: fprintf(stdout, "UNKNOWN: %d", tok); break;
 		}
 	}
+hashPrint();
 }
 	

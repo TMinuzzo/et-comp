@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+extern char* yytext;
+
 void hashInit(void)
 {
 	int i;
@@ -27,12 +29,28 @@ NODE* hashInsert(int type, char *text)
 {
 	NODE *newNode;
 	int address = hashAddress(text);
+
+	if((newNode = hashFind(text)) != 0)
+		return newNode;
+
 	newNode = (NODE*)calloc(1, sizeof(NODE));
 	newNode->type = type;
-	newNode->text = calloc(strlen(text) + 1, sizeof(char));
+	newNode->text = calloc(strlen(yytext) + 1, sizeof(char));
 	strcpy(newNode->text, text);
 	newNode->next = Table[address];
 	Table[address] = newNode;
+}
+
+NODE* hashFind(char* text)
+{
+	int address = hashAddress(text);
+	NODE* node;
+	for(node=Table[address]; node; node=node->next)
+	{
+		if(strcmp(text, node->text) == 0)
+			return node;
+	}
+	return 0;
 }
 
 void hashPrint(void)
