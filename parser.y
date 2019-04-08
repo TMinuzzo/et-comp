@@ -4,6 +4,7 @@
 	//#include "hash.h"
 	void yyerror(char const *s);
 	int yylex();
+	extern int lineNumber;
 %}
 
 %token KW_BYTE       
@@ -41,43 +42,122 @@
 %error-verbose
 
 %%
-
-	type: KW_INT
+	type	: KW_BYTE
 		| KW_FLOAT
-		| KW_BYTE;
+		| KW_INT
+		;
+	lit	: LIT_FLOAT
+		| LIT_CHAR
+		| LIT_INTEGER
+		;
+
+	program	: decList
+		|
+		;
+
+	decList : globalVarDeclaration decList
+		| globalVecDeclaration decList
+		| function decList
+		|
+		;
+
+	globalVarDeclaration	: type TK_IDENTIFIER '=' lit ';'
+				;
+	globalVecDeclaration	: type TK_IDENTIFIER '[' LIT_INTEGER ']' vecInit ';'
+				;
+	vecInit		: ':' lit restVecInit 
+			| 
+			;
+	restVecInit	: lit restVecInit
+			|
+			; 
+
+	function	: type TK_IDENTIFIER '(' funcParamList ')' cmdBlock
+			;
+	funcParamList	: type TK_IDENTIFIER restParamList
+			|
+			;
+	restParamList	: ',' type TK_IDENTIFIER restParamList
+			|
+			;
+
+	cmdBlock	: '{' cmds '}' ';'
+			| simpleCmd
+			;
+	cmds		: simpleCmd ';' cmds
+			| cmdBlock cmds
+			|
+			;
+	simpleCmd	: cmdPrint
+			| cmdRead
+			| cmdReturn
+			| cmdAttrib
+			| cmdCtrlFlow
+			|	
+			;
 	
-	lit: LIT_FLOAT
-	   | LIT_INTEGER
-	   | LIT_CHAR;
+	cmdCtrlFlow	: KW_IF aritExpression KW_THEN cmdBlock
+			| KW_IF aritExpression KW_THEN cmdBlock KW_ELSE cmdBlock
+			| KW_LOOP aritExpression cmdBlock
+			| KW_LEAP
+			;
+
+	cmdReturn	: KW_RETURN aritExpression
+			;
+	cmdRead		: KW_READ TK_IDENTIFIER
+			;
+	cmdPrint	: KW_PRINT printElements
+			;
+	cmdAttrib	: TK_IDENTIFIER vector '=' aritExpression
+			;
+	vector		: '[' aritExpression ']'
+			|
+			;
+	printElements	: element restElements
+			;
+	restElements	: ',' element restElements
+			|
+			;
+ 	element		: LIT_STRING
+			| aritExpression
+			;
+	aritExpression	: TK_IDENTIFIER
+			| TK_IDENTIFIER '[' aritExpression ']'
+			| funcCall
+			| aritExpression operator aritExpression
+			| '(' aritExpression ')'
+			| LIT_INTEGER
+			| LIT_CHAR
+			| LIT_FLOAT
+			;
+	funcCall	: TK_IDENTIFIER '(' funcCallParam ')'
+			;
+	funcCallParam	: TK_IDENTIFIER restFuncCallParam
+			| LIT_INTEGER restFuncCallParam
+			| LIT_CHAR restFuncCallParam
+			| LIT_FLOAT restFuncCallParam
+			;
+	restFuncCallParam	: ',' TK_IDENTIFIER restFuncCallParam
+			| ',' LIT_INTEGER restFuncCallParam
+			| ',' LIT_CHAR restFuncCallParam
+			| ',' LIT_FLOAT restFuncCallParam
+			|
+			;
+	operator	: OPERATOR_LE   
+			| OPERATOR_GE   
+			| OPERATOR_EQ   
+			| OPERATOR_DIF  
+			| OPERATOR_OR   
+			| OPERATOR_AND  
+			| OPERATOR_NOT  
+			| '+'
+			| '-'
+			| '*'
+			| '/'
+			| '<'
+			| '>'
+			;
 	
-	program: global_var_declaration | %empty ;
-	//declist: dec declist ;
-	//dec: type TK_IDENTIFIER | type TK_IDENTIFIER '(' params ')' cmd
-	array: '[' LIT_INTEGER ']' array_init;
-	array_init: ':' value_array | %empty;
-	array_optional: array | %empty;
-	value_array: lit value_array | %empty;
-
-	global_var_declaration: global_array | global_var ;
-	global_array: type TK_IDENTIFIER array ';'; 
-	global_var: type TK_IDENTIFIER '=' lit ';' { fprintf(stderr, "global"); } ;
-
-	function: header body;
-	header: type TK_IDENTIFIER '(' params ')';
-	body: block ;
-	params: param comma;
-	comma: ',' param comma | %empty;
-	param: type TK_IDENTIFIER;
-
-	//cmd: assign | flux_ctrl | %empty;   
-	block: '{'  '}';
-	//cmds: cmd ';' cmds | %empty ;
-
-	//assign: TK_IDENTIFIER '=' expr | TK_IDENTIFIER '[' expr ']' '=' expr;
-	//flux_ctrl: ;
-	//expr:
-	
- 
 %%
 
 
@@ -85,5 +165,6 @@
 void yyerror (char const *s)
 {
 
-  fprintf (stderr, "%s\n", s);
+  fprintf (stderr, "%s ", s);
+  fprintf (stderr, "on line %d\n", lineNumber);
 }
