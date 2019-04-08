@@ -117,4 +117,5 @@
 void yyerror (char const *s)
 {
   fprintf (stderr, "%s , line: %d\n", s, getLineNumber());
+  exit(3);
 }
