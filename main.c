@@ -7,6 +7,7 @@ extern int running;
 extern int lineNumber;
 int yylex();
 int yyparse();
+int yydebug = 1;
 extern char* yytext;
 extern FILE *yyin;
 

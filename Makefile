@@ -8,10 +8,10 @@ hash.o: hash.c
 
 lex.yy.o: parser.y scanner.l
 	@echo "\n Compile parser"
-	yacc -d parser.y
-	lex scanner.l
+	yacc -d  --verbose --debug parser.y
+	lex --header-file=lex.yy.h scanner.l 
 	gcc -c lex.yy.c y.tab.c
 
 
 clean:
-	rm *.o lex.yy.* y.tab.*  etapa2
+	rm -f *.o lex.yy.* y.tab.*  etapa2
