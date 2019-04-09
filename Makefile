@@ -12,6 +12,8 @@ lex.yy.o: parser.y scanner.l
 	lex --header-file=lex.yy.h scanner.l 
 	gcc -c lex.yy.c y.tab.c
 
+zip:
+	tar cvzf etapa2.tgz Makefile main.c parser.y scanner.l hash.c hash.h
 
 clean:
 	rm -f *.o lex.yy.* y.tab.*  etapa2

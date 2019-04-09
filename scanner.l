@@ -38,19 +38,19 @@ BLOCK_COMMENT "XXX"
 "!="				{ return OPERATOR_DIF; }
 " "
 "\t"
-"\n"				{ lineNumber++; }
-{OPERATOR}			{ return yytext[0]; }
+"\n"					{ lineNumber++; }
+{OPERATOR}				{ return yytext[0]; }
 {IDENTIFIER}			{ hashInsert(0, yytext); return TK_IDENTIFIER; }
-{INTEGER}			{ hashInsert(0, yytext); return LIT_INTEGER; }
-{INTEGER}"."{INTEGER}		{ hashInsert(0, yytext); return LIT_FLOAT; }		
-['].[']				{ hashInsert(0, yytext); return LIT_CHAR; }
-{STRING}			{ hashInsert(0, yytext); return LIT_STRING; }
+{INTEGER}				{ hashInsert(0, yytext); return LIT_INTEGER; }
+{INTEGER}"."{INTEGER}	{ hashInsert(0, yytext); return LIT_FLOAT; }		
+['].[']					{ hashInsert(0, yytext); return LIT_CHAR; }
+{STRING}				{ hashInsert(0, yytext); return LIT_STRING; }
 {LINE_COMMENT}				
-{BLOCK_COMMENT}			{ BEGIN(BLOCK_COMMENT); }
+{BLOCK_COMMENT}					{ BEGIN(BLOCK_COMMENT); }
 <BLOCK_COMMENT>{BLOCK_COMMENT}	{ BEGIN(INITIAL); }
 <BLOCK_COMMENT>.
-<BLOCK_COMMENT>"\n"		{ lineNumber++; }
-.				{ return TOKEN_ERROR; }
+<BLOCK_COMMENT>"\n"				{ lineNumber++; }
+.								{ return TOKEN_ERROR; }
 
 %%
 
