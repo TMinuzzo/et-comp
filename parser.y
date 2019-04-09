@@ -60,7 +60,7 @@
 		: declist;
 	declist
 		: dec declist
-		| %empty;
+		|;
 	dec
 		: global_var_declaration 
 		| function;
@@ -69,12 +69,12 @@
 		: '[' LIT_INTEGER ']' array_opt_init;
 	array_opt_init
 		: ':' value_array 
-		| %empty;
+		|;
 	value_array
 		: lit value_array_opt;
 	value_array_opt
 		: lit value_array_opt 
-		| %empty;
+		|;
 
 	global_var_declaration
 		: type TK_IDENTIFIER array ';' 
@@ -87,10 +87,10 @@
 		: block ';';
 	params
 		: param next_param 
-		| %empty;
+		|;
 	next_param
 		: ',' param next_param 
-		| %empty;
+		|;
 	param
 		: type TK_IDENTIFIER;
 
@@ -98,7 +98,7 @@
 		: '{' cmds '}';
 	cmds
 		: cmd cmds 
-		| %empty;
+		|;
 	cmd
 		: cmd_return 
 		| assign ';' 
@@ -121,7 +121,7 @@
 		: print_element print_elements_opt;
 	print_elements_opt
 		: ',' print_element print_elements_opt 
-		| %empty;
+		|;
 	print_element
 		: LIT_STRING 
 		| expr;
@@ -159,10 +159,10 @@
 		: TK_IDENTIFIER '(' args ')';
 	args
 		: expr next_arg 
-		| %empty;
+		|;
 	next_arg
 		: ',' expr next_arg 
-		| %empty;
+		|;
 
 	ctrl_flow
 		: KW_IF '(' expr ')' KW_THEN then_opt
@@ -174,7 +174,7 @@
 		| KW_ELSE cmd;
 	else_opt
 	: KW_ELSE cmd 
-	| %empty;
+	|;
  
 %%
 
