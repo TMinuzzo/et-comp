@@ -14,7 +14,7 @@
 #define AST_GLOBAL_DEC     	5
 #define AST_GLOBAL_DEC_INIT 6
 #define AST_FUNCTION  	    7
-#define AST_HEADER       	8
+#define AST_HEADER_      	8
 #define AST_PARAMS      	9
 #define AST_PARAM       	10
 #define AST_CMDS        	11

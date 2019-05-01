@@ -3,7 +3,6 @@
 	#include <stdlib.h>
 	#include "lex.yy.h"
 	#include "ast.h"
-	#include "hash.h"
 
 	void yyerror(char const *s);
 	int yylex();
@@ -115,8 +114,8 @@
 		   | 									{ $$ = 0; }
 		   ;		
 
-	dec: global_var_declaration 				{ $$ = $1 }
-		| function								{ $$ = $1 }
+	dec: global_var_declaration 				{ $$ = $1; }
+		| function								{ $$ = $1; }
 		;	
 
 	array: '[' LIT_INTEGER ']' array_opt_init	{ $$ = astCreate(AST_ARRAY, $2, $4, 0, 0, 0); }
@@ -140,7 +139,7 @@
 	function: header body										{ $$ = astCreate(AST_FUNCTION, 0, $1, $2, 0, 0); }
 			;
 
-	header: type TK_IDENTIFIER '(' params ')'					{ $$ = astCreate(AST_HEADER, $2, $1, $4, 0, 0);  }
+	header: type TK_IDENTIFIER '(' params ')'					{ $$ = astCreate(AST_HEADER_, $2, $1, $4, 0, 0);  }
 		  ;
 
 	body: block ';'												{ $$ = $1; }
