@@ -3,6 +3,7 @@
 	#include <stdlib.h>
 	#include "lex.yy.h"
 	#include "ast.h"
+	#include "hash.h"
 
 	void yyerror(char const *s);
 	int yylex();
@@ -12,6 +13,7 @@
 %code requires {
 	#include "ast.h"
 }
+
 
 %token KW_BYTE       
 %token KW_INT        
@@ -51,10 +53,6 @@
 
 %type<ast> type
 %type<ast> lit
-%type<ast> arit_op
-%type<ast> rel_op
-%type<ast> log_op
-%type<ast> un_op
 %type<ast> program
 %type<ast> declist
 %type<ast> dec
@@ -98,266 +96,170 @@
 
 %%
 
-	type: KW_INT
-		| KW_FLOAT
-		| KW_BYTE;
+	type: KW_INT							{$$ = astCreate(AST_INT, 0, 0, 0, 0, 0);}
+		| KW_FLOAT						{$$ = astCreate(AST_FLOAT, 0, 0, 0, 0, 0);}
+		| KW_BYTE						{$$ = astCreate(AST_BYTE, 0, 0, 0, 0, 0);}
+		;
 	
-	lit: LIT_FLOAT
-	   | LIT_INTEGER
-	   | LIT_CHAR;
+	lit: LIT_FLOAT							{$$ = astCreate(AST_CONST, $1, 0, 0, 0, 0);}
+	  	| LIT_INTEGER						{$$ = astCreate(AST_CONST, $1, 0, 0, 0, 0);}
+	 	| LIT_CHAR						{$$ = astCreate(AST_CONST, $1, 0, 0, 0, 0);}
+		;
 
-	arit_op: '+' | '-' | '*' | '/';
-	rel_op: '<' | '>' | OPERATOR_LE | OPERATOR_GE | OPERATOR_EQ | OPERATOR_DIF;
-	log_op: OPERATOR_OR | OPERATOR_AND;
-	un_op: OPERATOR_NOT;
-
-	program: declist	 						{ astPrint($1, 0); if(out != NULL){ compile($1, out); } } 
+	program: declist	 					{ astPrint($1, 0); if(out != NULL){ compile($1, out); } } 
 		   ;
 
 	declist: dec declist 						{ $$ = astCreate(AST_DEC_LIST, 0, $1, $2, 0, 0); } 
-		   | 									{ $$ = 0; }
+		   | 							{ $$ = 0; }
 		   ;		
 
-	dec: global_var_declaration 				{ $$ = $1; }
-		| function								{ $$ = $1; }
+	dec: global_var_declaration 					{ $$ = $1; }
+		| function						{ $$ = $1; }
 		;	
 
-	array: '[' LIT_INTEGER ']' array_opt_init	{ $$ = astCreate(AST_ARRAY, $2, $4, 0, 0, 0); }
+	array: '[' LIT_INTEGER ']' array_opt_init			{ $$ = astCreate(AST_ARRAY, $2, $4, 0, 0, 0); }
 		 ;
 
-	array_opt_init: ':' value_array				{ $$ = astCreate(AST_ARRAY_INIT, 0, $2, 0, 0, 0); } 
-		|										{ $$ = 0; }
+	array_opt_init: ':' value_array					{ $$ = astCreate(AST_ARRAY_INIT, 0, $2, 0, 0, 0); } 
+		|							{ $$ = 0; }
 		;
 
-	value_array: lit value_array_opt			{ $$ = astCreate(AST_ARRAY_VALUE, 0, $1, $2, 0, 0); }
+	value_array: lit value_array_opt				{ $$ = astCreate(AST_ARRAY_VALUE, 0, $1, $2, 0, 0); }
 			   ;
 
-	value_array_opt: lit value_array_opt 		{ $$ = astCreate(AST_ARRAY_VALUE, 0, $1, $2, 0, 0); } //rever
-		|										{ $$ = 0; }
+	value_array_opt: lit value_array_opt 				{ $$ = astCreate(AST_ARRAY_VALUE, 0, $1, $2, 0, 0); } //rever
+		|							{ $$ = 0; }
 		;
 
 	global_var_declaration: type TK_IDENTIFIER array ';'		{ $$ = astCreate(AST_GLOBAL_DEC, $2, $1, $3, 0, 0); } 
-		| type TK_IDENTIFIER '=' lit ';'						{ $$ = astCreate(AST_GLOBAL_DEC_INIT, $2, $1, $4, 0, 0); }
+		| type TK_IDENTIFIER '=' lit ';'			{ $$ = astCreate(AST_GLOBAL_DEC_INIT, $2, $1, $4, 0, 0); }
 		;
 
-	function: header body										{ $$ = astCreate(AST_FUNCTION, 0, $1, $2, 0, 0); }
+	function: header body						{ $$ = astCreate(AST_FUNCTION, 0, $1, $2, 0, 0); }
 			;
 
-	header: type TK_IDENTIFIER '(' params ')'					{ $$ = astCreate(AST_HEADER_, $2, $1, $4, 0, 0);  }
+	header: type TK_IDENTIFIER '(' params ')'			{ $$ = astCreate(AST_HEADER, $2, $1, $4, 0, 0);  }
 		  ;
 
-	body: block ';'												{ $$ = $1; }
+	body: block ';'							{ $$ = $1; }
 		;
 
-	params: param next_param 									{ $$ = astCreate(AST_PARAMS, 0, $1, $2, 0, 0); }
-		|														{ $$ = 0; }
+	params: param next_param 					{ $$ = astCreate(AST_PARAMS, 0, $1, $2, 0, 0); }
+		|							{ $$ = 0; }
 		;
 
-	next_param: ',' param next_param							{ $$ = astCreate(AST_PARAMS, 0, $2, $3, 0, 0); }
-		|														{ $$ = 0; }
+	next_param: ',' param next_param				{ $$ = astCreate(AST_PARAMS, 0, $2, $3, 0, 0); }
+		|							{ $$ = 0; }
 		;
 
-	param: type TK_IDENTIFIER									{ $$ = astCreate(AST_PARAM, $2, $1, 0, 0, 0); }
+	param: type TK_IDENTIFIER					{ $$ = astCreate(AST_PARAM, $2, $1, 0, 0, 0); }
 		 ;
 
-	block: '{' cmds '}'											{ $$ = astCreate(AST_CMDS, 0, $2, 0, 0, 0); }
+	block: '{' cmds '}'						{ $$ = astCreate(AST_CMDS, 0, $2, 0, 0, 0); }
 		 ;
 
-	cmds: cmd cmds 												{}
-		|														{ $$ = 0; }
+	cmds: cmd cmds 							{$$ = astCreate(AST_CMDS, 0, $1, $2, 0, 0); }
+		|							{ $$ = 0; }
 		;
 
-	cmd: cmd_return 											{}
-		| assign ';' 											{}
-		| cmd_print ';' 										{}
-		| cmd_read ';' 											{}
-		| func_call ';' 										{}
-		| block ';'												{}
-		| ctrl_flow 											{}
-		| ';'													{}
+	cmd: 	cmd_return ';'						{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
+		| assign ';' 						{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
+		| cmd_print ';' 					{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
+		| cmd_read ';' 						{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
+		| func_call ';' 					{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
+		| block ';'						{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
+		| ctrl_flow ';'						{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
+		| ';'							{$$ = astCreate(AST_CMD, 0, 0, 0, 0, 0);}
 		;
 
-	assign: TK_IDENTIFIER '=' expr 								{}
-		| array_pos '=' expr									{}
+	assign: TK_IDENTIFIER '=' expr 					{$$ = astCreate(AST_ATTRIB, $1, $3, 0, 0, 0);}
+		| array_pos '=' expr					{$$ = astCreate(AST_ARR_ATTRIB, 0, $1, $3, 0, 0);}
 		;
 
-	cmd_read: KW_READ TK_IDENTIFIER 							{}
+	cmd_read: KW_READ TK_IDENTIFIER 				{$$ = astCreate(AST_READ, $2, 0, 0, 0, 0);}
 			;
 
-	cmd_print: KW_PRINT print_elements							{}
+	cmd_print: KW_PRINT print_elements				{$$ = astCreate(AST_PRINT, 0, $2, 0, 0, 0);}
 			 ;
 
-	print_elements: print_element print_elements_opt			{}
+	print_elements: print_element print_elements_opt		{$$ = astCreate(AST_PRINT_ELEM, 0, $1, $2, 0, 0);}
 				  ;
 
-	print_elements_opt: ',' print_element print_elements_opt 	{}
-		|														{ $$ = 0; }
+	print_elements_opt: ',' print_element print_elements_opt 	{$$ = astCreate(AST_PRINT_ELEM, 0, $2, $3, 0, 0);}
+		|							{ $$ = 0; }
 		;
 
-	print_element: LIT_STRING 									{}
-		| expr													{}
+	print_element: LIT_STRING 					{$$ = astCreate(AST_CONST, $1, 0, 0, 0, 0);}
+		| expr							{ $$ = astCreate(AST_EXPRESSION, 0, $1, 0, 0, 0);}
 		;
 
-	cmd_return: KW_RETURN expr 									{}
+	cmd_return: KW_RETURN expr 					{$$ = astCreate(AST_RETURN, 0, $2, 0, 0, 0);}
 			  ;
 
-	expr: rel_expr 												{}
+	expr: rel_expr 							{ $$ = astCreate(AST_EXPRESSION, 0, $1, 0, 0, 0);}
 	    ;
 
-	rel_expr: log_expr 											{}
-		| rel_expr rel_op log_expr								{}
-		;
-
-	log_expr: arit_expr											{}
-		| log_expr log_op arit_expr								{}
-		;
-
-	arit_expr: operand 											{}
-		| arit_expr arit_op un_expr								{}
-		;
-
-	program
-		: declist;
-	declist
-		: dec declist
-		|;
-	dec
-		: global_var_declaration 
-		| function;
-
-	array
-		: '[' LIT_INTEGER ']' array_opt_init;
-	array_opt_init
-		: ':' value_array 
-		|;
-	value_array
-		: lit value_array_opt;
-	value_array_opt
-		: lit value_array_opt 
-		|;
-
-	global_var_declaration
-		: type TK_IDENTIFIER array ';' 
-		| type TK_IDENTIFIER '=' lit ';';
-	function
-		: header body;
-	header
-		: type TK_IDENTIFIER '(' params ')';
-	body
-		: block ';';
-	params
-		: param next_param 
-		|;
-	next_param
-		: ',' param next_param 
-		|;
-	param
-		: type TK_IDENTIFIER;
-
-	block
-		: '{' cmds '}';
-	cmds
-		: cmd cmds 
-		|;
-	cmd
-		: cmd_return 
-		| assign ';' 
-		| cmd_print ';' 
-		| cmd_read ';' 
-		| func_call ';' 
-		| block ';'
-		| ctrl_flow 
-		| ';';
-
-	assign
-		: TK_IDENTIFIER '=' expr 
-		| array_pos '=' expr;
-	cmd_read
-		: KW_READ TK_IDENTIFIER ;
-
-	cmd_print
-		: KW_PRINT print_elements ;
-	print_elements
-		: print_element print_elements_opt;
-	print_elements_opt
-		: ',' print_element print_elements_opt 
-		|;
-	print_element
-		: LIT_STRING 
-		| expr;
-
-	cmd_return
-		: KW_RETURN expr ;
-	expr
-		: rel_expr ;
-
 	rel_expr
-		: log_expr 
-		| rel_expr rel_op log_expr;
+		: log_expr 						{ $$ = astCreate(AST_EXPRESSION, 0, $1, 0, 0, 0);}
+		| rel_expr OPERATOR_GE log_expr				{ $$ = astCreate(AST_GE, 0, $1, $3, 0, 0);}
+		| rel_expr OPERATOR_LE log_expr				{ $$ = astCreate(AST_LE, 0, $1, $3, 0, 0);}
+		| rel_expr OPERATOR_EQ log_expr				{ $$ = astCreate(AST_EQ, 0, $1, $3, 0, 0);}
+		| rel_expr OPERATOR_DIF log_expr			{ $$ = astCreate(AST_DIF, 0, $1, $3, 0, 0);}
+		| rel_expr '>' log_expr					{ $$ = astCreate(AST_GREATER, 0, $1, $3, 0, 0);}
+		| rel_expr '<' log_expr					{ $$ = astCreate(AST_LESS, 0, $1, $3, 0, 0);}
+		;
 	log_expr
-		: arit_expr
-		| log_expr log_op arit_expr;
+		: arit_expr						{ $$ = astCreate(AST_EXPRESSION, 0, $1, 0, 0, 0);}
+		| log_expr OPERATOR_AND arit_expr			{ $$ = astCreate(AST_AND, 0, $1, $3, 0, 0);}
+		| log_expr OPERATOR_OR arit_expr			{ $$ = astCreate(AST_OR, 0, $1, $3, 0, 0);}
+		;
+
 	arit_expr
-		: operand 
-		| arit_expr arit_op un_expr;
+		: un_expr 						{ $$ = astCreate(AST_EXPRESSION, 0, $1, 0, 0, 0);}
+		| arit_expr '+' un_expr					{ $$ = astCreate(AST_ADD, 0, $1, $3, 0, 0);}
+		| arit_expr '-' un_expr					{ $$ = astCreate(AST_SUB, 0, $1, $3, 0, 0);}		
+		| arit_expr '/' un_expr					{ $$ = astCreate(AST_DIV, 0, $1, $3, 0, 0);}
+		| arit_expr '*' un_expr					{ $$ = astCreate(AST_MUL, 0, $1, $3, 0, 0);}
+		;
+
 	
-	un_expr: un_op operand 										{}
-		| operand												{}
+	un_expr: OPERATOR_NOT operand 					{ $$ = astCreate(AST_NOT, 0, $2, 0, 0, 0);}
+		| operand						{ $$ = astCreate(AST_OPERAND, 0, $1, 0, 0, 0);}
 		;
 
-	operand: TK_IDENTIFIER 										{}
-		| lit 													{}
-		| array_pos 											{}
-		| func_call 											{}
-		| '(' expr ')'											{}
+	operand: TK_IDENTIFIER 						{ $$ = astCreate(AST_IDENTIFIER, $1, 0, 0, 0, 0);}
+		| lit 							{ $$ = astCreate(AST_OPERAND, 0, $1, 0, 0, 0);}
+		| array_pos 						{ $$ = astCreate(AST_OPERAND, 0, $1, 0, 0, 0);}
+		| func_call 						{ $$ = astCreate(AST_OPERAND, 0, $1, 0, 0, 0);}
+		| '(' expr ')'						{ $$ = astCreate(AST_OPERAND, 0, $2, 0, 0, 0);}
 		;
 
-	array_pos: TK_IDENTIFIER '[' arit_expr ']'					{}
+	array_pos: TK_IDENTIFIER '[' arit_expr ']'			{$$ = astCreate(AST_ARR_POS, $1, $3, 0, 0, 0);}
 			 ;
 	
-	func_call: TK_IDENTIFIER '(' args ')'						{}
+	func_call: TK_IDENTIFIER '(' args ')'				{$$ = astCreate(AST_FUNC_CALL, $1, $3, 0, 0, 0);}
 			 ;
 
-	args: expr next_arg 										{}
-		|														{ $$ = 0; }
+	args: expr next_arg 						{$$ = astCreate(AST_EXPRESSION, 0, $1, $2, 0, 0);}
+		|							{ $$ = 0; }
 		;
 
-	next_arg: ',' expr next_arg 								{}
-		|														{}
+	next_arg: ',' expr next_arg 					{$$ = astCreate(AST_EXPRESSION, 0, $2, $3, 0, 0);}
+		|							{$$ = 0;}
 		;
 
-	ctrl_flow: KW_IF '(' expr ')' KW_THEN then_opt				{}
-		| KW_LOOP '(' expr ')' cmd								{}
-		| KW_LEAP												{}
+	ctrl_flow: KW_IF '(' expr ')' KW_THEN then_opt			{$$ = astCreate(AST_IF, 0, $3, $6, 0, 0);}
+		| KW_LOOP '(' expr ')' cmd				{$$ = astCreate(AST_LOOP, 0, $3, $5, 0, 0);}
+		| KW_LEAP						{$$ = astCreate(AST_LEAP, 0, 0, 0, 0, 0);}
 		;
 
-	then_opt: cmd else_opt										{}
-		| KW_ELSE cmd											{}
+	then_opt: cmd else_opt						{$$ = astCreate(AST_CMDS, 0, $1, 0, 0, 0);}
+		| KW_ELSE cmd						{$$ = astCreate(AST_ELSE, 0, $2, 0, 0, 0);}
 		;
 
-	else_opt: KW_ELSE cmd 										{}
-			|													{ $$ = 0; }
-			;
-	func_call
-		: TK_IDENTIFIER '(' args ')';
-	args
-		: expr next_arg 
-		|;
-	next_arg
-		: ',' expr next_arg 
-		|;
-
-	ctrl_flow
-		: KW_IF '(' expr ')' KW_THEN then_opt
-		| KW_LOOP '(' expr ')' cmd
-		| KW_LEAP;
-
-	then_opt
-		: cmd else_opt
-		| KW_ELSE cmd;
-	else_opt
-	: KW_ELSE cmd 
-	|;
+	else_opt: KW_ELSE cmd 						{$$ = astCreate(AST_ELSE, 0, $2, 0, 0, 0);}
+		|							{ $$ = 0; }
+		;
  
 %%
 
