@@ -1,3 +1,7 @@
+
+#ifndef HEADER_HASH
+#define HEADER_HASH
+
 #define HASH_SIZE 997
 
 typedef struct hash_node
@@ -14,3 +18,5 @@ void hashPrint(void);
 NODE* hashInsert(int type, char *text);
 NODE* hashFind(char* text);
 int hashAddress(char *text);
+
+#endif

@@ -39,6 +39,8 @@ NODE* hashInsert(int type, char *text)
 	strcpy(newNode->text, text);
 	newNode->next = Table[address];
 	Table[address] = newNode;
+
+	return newNode;
 }
 
 NODE* hashFind(char* text)

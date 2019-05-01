@@ -2,8 +2,7 @@
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include "lex.yy.h"
-	#include "ast.h"
-	#include "hash.h"
+	//#include "ast.h"
 
 	void yyerror(char const *s);
 	int yylex();
@@ -92,111 +91,111 @@
 %type<ast> else_opt
 
 %start program
-%error-verbose
+//%error-verbose
 
 %%
 
 	type: KW_INT							{$$ = astCreate(AST_INT, 0, 0, 0, 0, 0);}
-		| KW_FLOAT						{$$ = astCreate(AST_FLOAT, 0, 0, 0, 0, 0);}
-		| KW_BYTE						{$$ = astCreate(AST_BYTE, 0, 0, 0, 0, 0);}
+		| KW_FLOAT							{$$ = astCreate(AST_FLOAT, 0, 0, 0, 0, 0);}
+		| KW_BYTE							{$$ = astCreate(AST_BYTE, 0, 0, 0, 0, 0);}
 		;
 	
 	lit: LIT_FLOAT							{$$ = astCreate(AST_CONST, $1, 0, 0, 0, 0);}
-	  	| LIT_INTEGER						{$$ = astCreate(AST_CONST, $1, 0, 0, 0, 0);}
-	 	| LIT_CHAR						{$$ = astCreate(AST_CONST, $1, 0, 0, 0, 0);}
+	  	| LIT_INTEGER						{$$ = astCreate(AST_CONST, $1, 0, 0, 0, 0); }
+	 	| LIT_CHAR							{$$ = astCreate(AST_CONST, $1, 0, 0, 0, 0);}
 		;
 
-	program: declist	 					{ astPrint($1, 0); if(out != NULL){ compile($1, out); } } 
+	program: declist	 					{ astPrint($1, 0); { compile($1, out); }} 
 		   ;
 
-	declist: dec declist 						{ $$ = astCreate(AST_DEC_LIST, 0, $1, $2, 0, 0); } 
-		   | 							{ $$ = 0; }
+	declist: dec declist 					{ $$ = astCreate(AST_DEC_LIST, 0, $1, $2, 0, 0); } 
+		   | 								{ $$ = 0; }
 		   ;		
 
-	dec: global_var_declaration 					{ $$ = $1; }
-		| function						{ $$ = $1; }
+	dec: global_var_declaration 			{ $$ = $1; }
+		| function							{ $$ = $1; }
 		;	
 
 	array: '[' LIT_INTEGER ']' array_opt_init			{ $$ = astCreate(AST_ARRAY, $2, $4, 0, 0, 0); }
 		 ;
 
-	array_opt_init: ':' value_array					{ $$ = astCreate(AST_ARRAY_INIT, 0, $2, 0, 0, 0); } 
-		|							{ $$ = 0; }
+	array_opt_init: ':' value_array						{ $$ = astCreate(AST_ARRAY_INIT, 0, $2, 0, 0, 0); } 
+		|												{ $$ = 0; }
 		;
 
-	value_array: lit value_array_opt				{ $$ = astCreate(AST_ARRAY_VALUE, 0, $1, $2, 0, 0); }
+	value_array: lit value_array_opt					{ $$ = astCreate(AST_ARRAY_VALUE, 0, $1, $2, 0, 0); }
 			   ;
 
 	value_array_opt: lit value_array_opt 				{ $$ = astCreate(AST_ARRAY_VALUE, 0, $1, $2, 0, 0); } //rever
-		|							{ $$ = 0; }
+		|												{ $$ = 0; }
 		;
 
 	global_var_declaration: type TK_IDENTIFIER array ';'		{ $$ = astCreate(AST_GLOBAL_DEC, $2, $1, $3, 0, 0); } 
-		| type TK_IDENTIFIER '=' lit ';'			{ $$ = astCreate(AST_GLOBAL_DEC_INIT, $2, $1, $4, 0, 0); }
+		| type TK_IDENTIFIER '=' lit ';'						{ $$ = astCreate(AST_GLOBAL_DEC_INIT, $2, $1, $4, 0, 0); }
 		;
 
-	function: header body						{ $$ = astCreate(AST_FUNCTION, 0, $1, $2, 0, 0); }
+	function: header body										{ $$ = astCreate(AST_FUNCTION, 0, $1, $2, 0, 0); }
 			;
 
-	header: type TK_IDENTIFIER '(' params ')'			{ $$ = astCreate(AST_HEADER, $2, $1, $4, 0, 0);  }
+	header: type TK_IDENTIFIER '(' params ')'					{ $$ = astCreate(AST_HEADER, $2, $1, $4, 0, 0);  }
 		  ;
 
-	body: block ';'							{ $$ = $1; }
+	body: block ';'												{ $$ = $1; }
 		;
 
-	params: param next_param 					{ $$ = astCreate(AST_PARAMS, 0, $1, $2, 0, 0); }
-		|							{ $$ = 0; }
+	params: param next_param 									{ $$ = astCreate(AST_PARAMS, 0, $1, $2, 0, 0); }
+		|														{ $$ = 0; }
 		;
 
-	next_param: ',' param next_param				{ $$ = astCreate(AST_PARAMS, 0, $2, $3, 0, 0); }
-		|							{ $$ = 0; }
+	next_param: ',' param next_param							{ $$ = astCreate(AST_PARAMS, 0, $2, $3, 0, 0); }
+		|														{ $$ = 0; }
 		;
 
-	param: type TK_IDENTIFIER					{ $$ = astCreate(AST_PARAM, $2, $1, 0, 0, 0); }
+	param: type TK_IDENTIFIER									{ $$ = astCreate(AST_PARAM, $2, $1, 0, 0, 0); }
 		 ;
 
-	block: '{' cmds '}'						{ $$ = astCreate(AST_CMDS, 0, $2, 0, 0, 0); }
+	block: '{' cmds '}'											{ $$ = astCreate(AST_CMDS, 0, $2, 0, 0, 0); }
 		 ;
 
-	cmds: cmd cmds 							{$$ = astCreate(AST_CMDS, 0, $1, $2, 0, 0); }
-		|							{ $$ = 0; }
+	cmds: cmd cmds 												{ $$ = astCreate(AST_CMDS, 0, $1, $2, 0, 0); }
+		|														{ $$ = 0; }
 		;
 
-	cmd: 	cmd_return ';'						{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
-		| assign ';' 						{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
-		| cmd_print ';' 					{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
-		| cmd_read ';' 						{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
-		| func_call ';' 					{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
-		| block ';'						{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
-		| ctrl_flow ';'						{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
-		| ';'							{$$ = astCreate(AST_CMD, 0, 0, 0, 0, 0);}
+	cmd: 	cmd_return ';'										{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
+		| assign ';' 											{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
+		| cmd_print ';' 										{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
+		| cmd_read ';' 											{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
+		| func_call ';' 										{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
+		| block ';'												{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
+		| ctrl_flow ';'											{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
+		| ';'													{$$ = astCreate(AST_CMD, 0, 0, 0, 0, 0);}
 		;
 
-	assign: TK_IDENTIFIER '=' expr 					{$$ = astCreate(AST_ATTRIB, $1, $3, 0, 0, 0);}
-		| array_pos '=' expr					{$$ = astCreate(AST_ARR_ATTRIB, 0, $1, $3, 0, 0);}
+	assign: TK_IDENTIFIER '=' expr 								{$$ = astCreate(AST_ATTRIB, $1, $3, 0, 0, 0);}
+		| array_pos '=' expr									{$$ = astCreate(AST_ARR_ATTRIB, 0, $1, $3, 0, 0);}
 		;
 
-	cmd_read: KW_READ TK_IDENTIFIER 				{$$ = astCreate(AST_READ, $2, 0, 0, 0, 0);}
+	cmd_read: KW_READ TK_IDENTIFIER 							{$$ = astCreate(AST_READ, $2, 0, 0, 0, 0);}
 			;
 
-	cmd_print: KW_PRINT print_elements				{$$ = astCreate(AST_PRINT, 0, $2, 0, 0, 0);}
+	cmd_print: KW_PRINT print_elements							{$$ = astCreate(AST_PRINT, 0, $2, 0, 0, 0);}
 			 ;
 
-	print_elements: print_element print_elements_opt		{$$ = astCreate(AST_PRINT_ELEM, 0, $1, $2, 0, 0);}
+	print_elements: print_element print_elements_opt			{$$ = astCreate(AST_PRINT_ELEM, 0, $1, $2, 0, 0);}
 				  ;
 
 	print_elements_opt: ',' print_element print_elements_opt 	{$$ = astCreate(AST_PRINT_ELEM, 0, $2, $3, 0, 0);}
-		|							{ $$ = 0; }
+		|														{ $$ = 0; }
 		;
 
-	print_element: LIT_STRING 					{$$ = astCreate(AST_CONST, $1, 0, 0, 0, 0);}
-		| expr							{ $$ = astCreate(AST_EXPRESSION, 0, $1, 0, 0, 0);}
+	print_element: LIT_STRING 									{$$ = astCreate(AST_CONST, $1, 0, 0, 0, 0);}
+		| expr													{ $$ = astCreate(AST_EXPRESSION, 0, $1, 0, 0, 0);}
 		;
 
-	cmd_return: KW_RETURN expr 					{$$ = astCreate(AST_RETURN, 0, $2, 0, 0, 0);}
+	cmd_return: KW_RETURN expr 									{$$ = astCreate(AST_RETURN, 0, $2, 0, 0, 0);}
 			  ;
 
-	expr: rel_expr 							{ $$ = astCreate(AST_EXPRESSION, 0, $1, 0, 0, 0);}
+	expr: rel_expr 												{ $$ = astCreate(AST_EXPRESSION, 0, $1, 0, 0, 0);}
 	    ;
 
 	rel_expr
@@ -263,6 +262,9 @@
  
 %%
 
+void defineOut(FILE *o){
+    out = o;
+}
 
 void yyerror (char const *s)
 {
