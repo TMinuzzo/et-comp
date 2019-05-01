@@ -9,6 +9,10 @@
 	int getLineNumber();
 %}
 
+%code requires {
+	#include "ast.h"
+}
+
 %token KW_BYTE       
 %token KW_INT        
 %token KW_FLOAT      
