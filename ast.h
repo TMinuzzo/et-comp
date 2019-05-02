@@ -57,6 +57,9 @@
 #define AST_FLOAT		44
 
 #define AST_CMD			45
+#define AST_BLOCK		46
+#define AST_IF_ELSE		47
+#define AST_ARGS		48
 
 
 typedef struct ast_node{

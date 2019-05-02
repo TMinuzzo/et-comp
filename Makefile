@@ -10,12 +10,12 @@ hash.o: hash.c
 
 lex.yy.o: parser.y scanner.l
 	@echo "\n Compile parser"
-	yacc -d  --verbose --debug parser.y
+	yacc -d  parser.y
 	lex --header-file=lex.yy.h scanner.l 
 	gcc -c lex.yy.c y.tab.c
 
 zip:
-	tar cvzf etapa2.tgz Makefile main.c parser.y scanner.l hash.c hash.h ast.c ast.h
+	tar cvzf etapa3.tgz Makefile main.c parser.y scanner.l hash.c hash.h ast.c ast.h
 
 clean:
 	rm -f *.o lex.yy.* y.tab.*  etapa3

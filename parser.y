@@ -41,9 +41,12 @@
 
 
 
-%left '<' '>' '='
+%left OPERATOR_LE OPERATOR_GE OPERATOR_EQ '<' '>'
+%left OPERATOR_OR OPERATOR_AND
 %left '+' '-'
 %left '*' '/'
+%left '(' ')' '[' ']'
+
 
 %union {
 	NODE *symbol;
@@ -69,6 +72,7 @@
 %type<ast> block
 %type<ast> cmds
 %type<ast> cmd
+%type<ast> more_cmds
 %type<ast> assign
 %type<ast> cmd_read
 %type<ast> cmd_print
@@ -87,11 +91,14 @@
 %type<ast> args
 %type<ast> next_arg
 %type<ast> ctrl_flow
-%type<ast> then_opt
-%type<ast> else_opt
 
 %start program
 //%error-verbose
+
+
+%nonassoc IFX
+%nonassoc KW_ELSE
+
 
 %%
 
@@ -119,14 +126,14 @@
 	array: '[' LIT_INTEGER ']' array_opt_init			{ $$ = astCreate(AST_ARRAY, $2, $4, 0, 0, 0); }
 		 ;
 
-	array_opt_init: ':' value_array						{ $$ = astCreate(AST_ARRAY_INIT, 0, $2, 0, 0, 0); } 
+	array_opt_init: ':' value_array						{ $$ = $2; } 
 		|												{ $$ = 0; }
 		;
 
 	value_array: lit value_array_opt					{ $$ = astCreate(AST_ARRAY_VALUE, 0, $1, $2, 0, 0); }
 			   ;
 
-	value_array_opt: lit value_array_opt 				{ $$ = astCreate(AST_ARRAY_VALUE, 0, $1, $2, 0, 0); } //rever
+	value_array_opt: lit value_array_opt 				{ $$ = astCreate(AST_ARRAY_VALUE, 0, $1, $2, 0, 0); }
 		|												{ $$ = 0; }
 		;
 
@@ -154,21 +161,25 @@
 	param: type TK_IDENTIFIER									{ $$ = astCreate(AST_PARAM, $2, $1, 0, 0, 0); }
 		 ;
 
-	block: '{' cmds '}'											{ $$ = astCreate(AST_CMDS, 0, $2, 0, 0, 0); }
+	block: '{' cmds '}'											{ $$ = astCreate(AST_BLOCK, 0, $2, 0, 0, 0); }
 		 ;
 
-	cmds: cmd cmds 												{ $$ = astCreate(AST_CMDS, 0, $1, $2, 0, 0); }
+	cmds: cmd more_cmds 										{ $$ = astCreate(AST_CMDS, 0, $1, $2, 0, 0); }
 		|														{ $$ = 0; }
 		;
 
-	cmd: 	cmd_return ';'										{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
-		| assign ';' 											{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
-		| cmd_print ';' 										{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
-		| cmd_read ';' 											{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
-		| func_call ';' 										{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
-		| block ';'												{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
-		| ctrl_flow ';'											{$$ = astCreate(AST_CMD, 0, $1, 0, 0, 0);}
-		| ';'													{$$ = astCreate(AST_CMD, 0, 0, 0, 0, 0);}
+	more_cmds: ';' cmd more_cmds								{ $$ = astCreate(AST_CMDS, 0, $2, $3, 0, 0); }
+			 |													{ $$ = 0; }
+			 ;
+	
+	cmd: 	cmd_return 										{ $$ = $1; }
+		| block 											{ $$ = $1; }
+		| assign  											{ $$ = $1; }
+		| cmd_print  										{ $$ = $1; }
+		| cmd_read  										{ $$ = $1; }
+		| func_call  										{ $$ = $1; }
+		| ctrl_flow 										{ $$ = $1; }
+		| 													{ $$ = 0; }
 		;
 
 	assign: TK_IDENTIFIER '=' expr 								{$$ = astCreate(AST_ATTRIB, $1, $3, 0, 0, 0);}
@@ -189,17 +200,17 @@
 		;
 
 	print_element: LIT_STRING 									{$$ = astCreate(AST_CONST, $1, 0, 0, 0, 0);}
-		| expr													{ $$ = astCreate(AST_EXPRESSION, 0, $1, 0, 0, 0);}
+		| expr													{ $$ = $1;}
 		;
 
 	cmd_return: KW_RETURN expr 									{$$ = astCreate(AST_RETURN, 0, $2, 0, 0, 0);}
 			  ;
 
-	expr: rel_expr 												{ $$ = astCreate(AST_EXPRESSION, 0, $1, 0, 0, 0);}
+	expr: rel_expr 												{ $$ = $1; }
 	    ;
 
 	rel_expr
-		: log_expr 						{ $$ = astCreate(AST_EXPRESSION, 0, $1, 0, 0, 0);}
+		: log_expr 									{ $$ = $1 ;}
 		| rel_expr OPERATOR_GE log_expr				{ $$ = astCreate(AST_GE, 0, $1, $3, 0, 0);}
 		| rel_expr OPERATOR_LE log_expr				{ $$ = astCreate(AST_LE, 0, $1, $3, 0, 0);}
 		| rel_expr OPERATOR_EQ log_expr				{ $$ = astCreate(AST_EQ, 0, $1, $3, 0, 0);}
@@ -208,13 +219,13 @@
 		| rel_expr '<' log_expr					{ $$ = astCreate(AST_LESS, 0, $1, $3, 0, 0);}
 		;
 	log_expr
-		: arit_expr						{ $$ = astCreate(AST_EXPRESSION, 0, $1, 0, 0, 0);}
+		: arit_expr									{ $$ = $1;}
 		| log_expr OPERATOR_AND arit_expr			{ $$ = astCreate(AST_AND, 0, $1, $3, 0, 0);}
 		| log_expr OPERATOR_OR arit_expr			{ $$ = astCreate(AST_OR, 0, $1, $3, 0, 0);}
 		;
 
 	arit_expr
-		: un_expr 						{ $$ = astCreate(AST_EXPRESSION, 0, $1, 0, 0, 0);}
+		: un_expr 								{ $$ = $1;}
 		| arit_expr '+' un_expr					{ $$ = astCreate(AST_ADD, 0, $1, $3, 0, 0);}
 		| arit_expr '-' un_expr					{ $$ = astCreate(AST_SUB, 0, $1, $3, 0, 0);}		
 		| arit_expr '/' un_expr					{ $$ = astCreate(AST_DIV, 0, $1, $3, 0, 0);}
@@ -223,14 +234,14 @@
 
 	
 	un_expr: OPERATOR_NOT operand 					{ $$ = astCreate(AST_NOT, 0, $2, 0, 0, 0);}
-		| operand						{ $$ = astCreate(AST_OPERAND, 0, $1, 0, 0, 0);}
+		| operand									{ $$ = $1;}
 		;
 
-	operand: TK_IDENTIFIER 						{ $$ = astCreate(AST_IDENTIFIER, $1, 0, 0, 0, 0);}
-		| lit 							{ $$ = astCreate(AST_OPERAND, 0, $1, 0, 0, 0);}
-		| array_pos 						{ $$ = astCreate(AST_OPERAND, 0, $1, 0, 0, 0);}
-		| func_call 						{ $$ = astCreate(AST_OPERAND, 0, $1, 0, 0, 0);}
-		| '(' expr ')'						{ $$ = astCreate(AST_OPERAND, 0, $2, 0, 0, 0);}
+	operand: TK_IDENTIFIER 					{ $$ = astCreate(AST_IDENTIFIER, $1, 0, 0, 0, 0);}
+		| lit 								{ $$ = $1;}
+		| array_pos 						{ $$ = $1;}
+		| func_call 						{ $$ = $1;}
+		| '(' expr ')'						{ $$ = $2;}
 		;
 
 	array_pos: TK_IDENTIFIER '[' arit_expr ']'			{$$ = astCreate(AST_ARR_POS, $1, $3, 0, 0, 0);}
@@ -239,26 +250,20 @@
 	func_call: TK_IDENTIFIER '(' args ')'				{$$ = astCreate(AST_FUNC_CALL, $1, $3, 0, 0, 0);}
 			 ;
 
-	args: expr next_arg 						{$$ = astCreate(AST_EXPRESSION, 0, $1, $2, 0, 0);}
+	args: expr next_arg 						{$$ = astCreate(AST_ARGS, 0, $1, $2, 0, 0);}
 		|							{ $$ = 0; }
 		;
 
-	next_arg: ',' expr next_arg 					{$$ = astCreate(AST_EXPRESSION, 0, $2, $3, 0, 0);}
+	next_arg: ',' expr next_arg 					{$$ = astCreate(AST_ARGS, 0, $2, $3, 0, 0);}
 		|							{$$ = 0;}
 		;
 
-	ctrl_flow: KW_IF '(' expr ')' KW_THEN then_opt			{$$ = astCreate(AST_IF, 0, $3, $6, 0, 0);}
-		| KW_LOOP '(' expr ')' cmd				{$$ = astCreate(AST_LOOP, 0, $3, $5, 0, 0);}
-		| KW_LEAP						{$$ = astCreate(AST_LEAP, 0, 0, 0, 0, 0);}
-		;
-
-	then_opt: cmd else_opt						{$$ = astCreate(AST_CMDS, 0, $1, 0, 0, 0);}
-		| KW_ELSE cmd						{$$ = astCreate(AST_ELSE, 0, $2, 0, 0, 0);}
-		;
-
-	else_opt: KW_ELSE cmd 						{$$ = astCreate(AST_ELSE, 0, $2, 0, 0, 0);}
-		|							{ $$ = 0; }
-		;
+	ctrl_flow
+			: KW_IF '(' expr ')' KW_THEN cmd %prec IFX		              { $$ = astCreate(AST_IF, 0, $3, $6, 0, 0);}
+            | KW_IF '(' expr ')' KW_THEN cmd KW_ELSE cmd                  { $$ = astCreate(AST_IF_ELSE, 0, $3, $6, $8, 0);}
+			| KW_LOOP '(' expr ')' cmd									  { $$ = astCreate(AST_LOOP, 0, $3, $5, 0, 0); }
+			| KW_LEAP 													  { $$ = astCreate(AST_LEAP, 0, 0, 0, 0, 0); }
+			;
  
 %%
 
