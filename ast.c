@@ -107,6 +107,9 @@ void astPrint(AST *node, int level)
     case AST_AND:
         fprintf(stderr, "AST_AND\n");
         break;
+    case AST_EQ:
+        fprintf(stderr, "AST_EQ\n");
+        break;
     case AST_NOT:
         fprintf(stderr, "AST_NOT\n");
         break;
@@ -269,6 +272,13 @@ void compile(AST *node, FILE *out)
         fprintf(out, "return ");
         compile(temp->son[0], out);
         break;
+    case AST_EQ:
+        fprintf(out, "( ");
+        compile(temp->son[0], out);
+        fprintf(out, "==");
+        compile(temp->son[1], out);
+        fprintf(out, ") ");
+        break;
     case AST_ADD:
         fprintf(out, "( ");
         compile(temp->son[0], out);
@@ -322,13 +332,6 @@ void compile(AST *node, FILE *out)
         fprintf(out, "( ");
         compile(temp->son[0], out);
         fprintf(out, "<=");
-        compile(temp->son[1], out);
-        fprintf(out, ") ");
-        break;
-    case AST_EQ:
-        fprintf(out, "( ");
-        compile(temp->son[0], out);
-        fprintf(out, "==");
         compile(temp->son[1], out);
         fprintf(out, ") ");
         break;

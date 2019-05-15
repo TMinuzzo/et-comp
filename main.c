@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "hash.h"
-#include "y.tab.h"
 #include "ast.h"
+#include "y.tab.h"
+
 
 extern int running;
 extern int lineNumber;

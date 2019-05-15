@@ -2,17 +2,12 @@
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include "lex.yy.h"
-	//#include "ast.h"
+	#include "ast.h"
 
 	void yyerror(char const *s);
 	int yylex();
 	int getLineNumber();
 %}
-
-%code requires {
-	#include "ast.h"
-}
-
 
 %token KW_BYTE       
 %token KW_INT        
