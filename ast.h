@@ -61,6 +61,11 @@
 #define AST_IF_ELSE		47
 #define AST_ARGS		48
 
+#define AST_CONST_STRING	49
+#define AST_CONST_FLOAT		50
+#define AST_CONST_INT		51
+#define AST_CONST_BYTE		52
+
 
 typedef struct ast_node{
 	int type;

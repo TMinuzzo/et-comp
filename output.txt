@@ -1,0 +1,11 @@
+byte v[IO]:;
+;
+byte a =;
+byte 1 =;
+byte mat[IO];
+;
+float t =;
+float b =;
+byte incn(byte x, byte n){
+return ( ( x+n) +) 
+};

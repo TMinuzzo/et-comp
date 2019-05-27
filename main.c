@@ -49,6 +49,5 @@ int main(int argc, char **argv)
 		//exit(0);
 	}
 	semantic = setAndCheckRedeclared(root);
-	hashPrint();
 	fprintf(stderr,"semantic result = %d\n", semantic);
 }

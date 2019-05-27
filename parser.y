@@ -102,9 +102,9 @@
 		| KW_BYTE							{$$ = astCreate(AST_BYTE, 0, 0, 0, 0, 0);}
 		;
 	
-	lit: LIT_FLOAT							{$$ = astCreate(AST_CONST, $1, 0, 0, 0, 0);}
-	  	| LIT_INTEGER						{$$ = astCreate(AST_CONST, $1, 0, 0, 0, 0); }
-	 	| LIT_CHAR							{$$ = astCreate(AST_CONST, $1, 0, 0, 0, 0);}
+	lit: LIT_FLOAT							{$$ = astCreate(AST_CONST_FLOAT, $1, 0, 0, 0, 0);}
+	  	| LIT_INTEGER						{$$ = astCreate(AST_CONST_INT, $1, 0, 0, 0, 0); }
+	 	| LIT_CHAR							{$$ = astCreate(AST_CONST_BYTE, $1, 0, 0, 0, 0);}
 		;
 
 	program: declist	 					{ astPrint($1, 0); root = $1;{ compile($1, out); }} 
@@ -194,7 +194,7 @@
 		|														{ $$ = 0; }
 		;
 
-	print_element: LIT_STRING 									{$$ = astCreate(AST_CONST, $1, 0, 0, 0, 0);}
+	print_element: LIT_STRING 									{$$ = astCreate(AST_CONST_STRING, $1, 0, 0, 0, 0);}
 		| expr													{ $$ = $1;}
 		;
 
