@@ -3,6 +3,7 @@
 #include "hash.h"
 #include "ast.h"
 #include "y.tab.h"
+#include "semantic.h"
 
 
 extern int running;
@@ -20,6 +21,7 @@ void initMe(void);
 
 int main(int argc, char **argv)
 {
+	int semantic;
 	FILE *output;
 	if (argc < 3)
 	{
@@ -43,7 +45,10 @@ int main(int argc, char **argv)
 	int result = yyparse();
 	if (result == 0)
 	{
-		fprintf(stderr, "Sucesso");
-		exit(0);
+		fprintf(stderr, "Sucesso\n");
+		//exit(0);
 	}
+	semantic = setAndCheckRedeclared(root);
+	hashPrint();
+	fprintf(stderr,"semantic result = %d\n", semantic);
 }

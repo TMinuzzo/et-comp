@@ -4,5 +4,9 @@
 #include "ast.h"
 #include "hash.h"
 
+#define VAR_FLOAT	600
+#define VAR_INT 	601
+#define VAR_BYTE	602
 
-void setAndCheckRedeclared(AST *node);
+
+int setAndCheckRedeclared(AST *node);

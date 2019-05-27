@@ -107,7 +107,7 @@
 	 	| LIT_CHAR							{$$ = astCreate(AST_CONST, $1, 0, 0, 0, 0);}
 		;
 
-	program: declist	 					{ astPrint($1, 0); { compile($1, out); }} 
+	program: declist	 					{ astPrint($1, 0); root = $1;{ compile($1, out); }} 
 		   ;
 
 	declist: dec declist 					{ $$ = astCreate(AST_DEC_LIST, 0, $1, $2, 0, 0); } 
