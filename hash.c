@@ -35,6 +35,7 @@ NODE* hashInsert(int type, char *text)
 
 	newNode = (NODE*)calloc(1, sizeof(NODE));
 	newNode->type = type;
+	newNode->nature = -1;
 	newNode->text = calloc(strlen(yytext) + 1, sizeof(char));
 	strcpy(newNode->text, text);
 	newNode->next = Table[address];

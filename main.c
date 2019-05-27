@@ -50,4 +50,11 @@ int main(int argc, char **argv)
 	}
 	semantic = setAndCheckRedeclared(root);
 	fprintf(stderr,"semantic result = %d\n", semantic);
+	hashPrint();
+	semantic = checkUndeclared(root);
+	fprintf(stderr,"semantic result = %d\n", semantic);
+	semantic = checkFunctions(root);
+	fprintf(stderr,"semantic result = %d\n", semantic);
+	semantic = checkAritExpressions(root);
+	fprintf(stderr,"semantic result = %d\n", semantic);
 }

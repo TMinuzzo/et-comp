@@ -3,10 +3,15 @@
 #define HEADER_HASH
 
 #define HASH_SIZE 997
+#define FUNCTION	0
+#define SCALAR		1
+#define VECTOR		2
+
 
 typedef struct hash_node
 {
 	int type;
+	int nature;
 	char *text;
 	struct hash_node *next;
 } NODE;

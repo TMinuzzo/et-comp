@@ -5,12 +5,12 @@ byte a = O;
 byte 1 = O;
 byte mat [IO];
 float t = IO.EE;
-float t = O;
+float b = O;
 
 
 byte incn ( byte x, byte n )
   {
-  return x+n
+  return (x>x)+n
   };
 
 
