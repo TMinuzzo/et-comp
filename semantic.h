@@ -20,7 +20,7 @@ int checkUndeclared(AST *node);
 int checkFunctions(AST *node);
 int checkAritExpressions(AST *node);
 // int checkVectorIndex
-// int checkPrints
+int checkStrings();
 // int checkAttribs
 // int checkReturns
 // int checkIfBooleans

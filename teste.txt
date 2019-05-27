@@ -10,7 +10,7 @@ float b = O;
 
 byte incn ( byte x, byte n )
   {
-  return (x>x)+n
+  return (x+x)>n
   };
 
 

@@ -21,4 +21,4 @@ zip:
 	tar cvzf etapa3.tgz Makefile main.c parser.y scanner.l hash.c hash.h ast.c ast.h
 
 clean:
-	rm -f *.o lex.yy.* y.tab.*  etapa3
+	rm -f *.o lex.yy.* y.tab.*  etapa4

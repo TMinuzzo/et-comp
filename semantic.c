@@ -430,13 +430,59 @@ int checkAritExpressions(AST *node)
 					if((node->son[0]->symbol->type == LIT_INTEG || node->son[0]->symbol->type == VAR_INT || node->son[0]->symbol->type == VAR_BYTE || node->son[0]->symbol->type == LIT_BYTE) && (node->son[1]->symbol->type == LIT_INTEG || node->son[1]->symbol->type == VAR_INT || node->son[1]->symbol->type == VAR_BYTE || node->son[1]->symbol->type == LIT_BYTE))
 						node->type = VAR_INT;
 					else
+					{
 						fprintf(stderr, "ERROR: Incompatible operand %s\n", node->symbol->text);
 						return -1;
+					}
 				}
-				return -1;
+				return 0;
 			}
 			return -1;
-	
+		case AST_LE:
+		case AST_GE:
+		case AST_EQ:
+		case AST_DIF:
+		case AST_GREATER:
+		case AST_LESS:
+		case AST_OR:
+		case AST_AND:
+		case AST_NOT:
+			if(node->son[0] && node->son[1])
+				if ((node->son[0]->type != VAR_INT && node->son[0]->type != VAR_FLOAT && node->son[0]->type != VAR_BYTE && node->son[0]->type != AST_CONST_FLOAT && node->son[0]->type != AST_CONST_INT && node->son[0]->type != AST_CONST_BYTE && node->son[0]->type != AST_ADD && node->son[0]->type != AST_SUB && node->son[0]->type != AST_DIV && node->son[0]->type != AST_MUL && node->son[0]->type != AST_IDENTIFIER) ||
+					(node->son[1]->type != VAR_INT && node->son[0]->type != VAR_FLOAT && node->son[1]->type != VAR_BYTE && node->son[1]->type != AST_CONST_FLOAT && node->son[1]->type != AST_CONST_INT && node->son[1]->type != AST_CONST_BYTE && node->son[1]->type != AST_ADD && node->son[1]->type != AST_SUB && node->son[1]->type != AST_DIV && node->son[1]->type != AST_MUL && node->son[1]->type != AST_IDENTIFIER))
+				{
+					fprintf(stderr, "%d, %d\n", node->son[0]->type, node->son[1]->type);
+					fprintf(stderr, "ERROR: Invalid operands for boolean expression\n");
+					return -1;
+				}
+				else return result;
+			else
+				return -1;
+			break;
+
 		default: return result;
 	}
+}
+
+int checkStrings(AST *node)
+{	
+	int i, result = 0; //result = 0 -> check sucessfull
+    	if(node == 0)
+        	return 0;
+	for(i = 0; i < MAX_SONS; ++i )
+	{
+		if (checkStrings(node->son[i]) != 0)
+			result = -1;
+	}
+	for(i = 0; i < MAX_SONS; i++)
+	{
+		if (node->son[i] && node->son[i]->type == AST_CONST_STRING)
+			if(node->type != AST_PRINT_ELEM)
+			{
+				fprintf(stderr, "ERROR: Constant String used outside of print\n");
+			}
+			else
+				return result;
+	}
+	
 }
