@@ -21,7 +21,7 @@ int checkFunctions(AST *node);
 int checkAritExpressions(AST *node);
 int checkVectorIndex(AST *node);
 int checkStrings(AST *node);
-// int checkAttribs
+int checkVars(AST *node);
 // int checkReturns
 // int checkIfBooleans
 // replace find hash node

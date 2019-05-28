@@ -18,7 +18,7 @@ int setAndCheckRedeclared(AST *node)
 
     switch (node->type)
     {
-	NODE *tableNode;
+
 	case AST_GLOBAL_DEC:
 	case AST_READ:
 	case AST_PARAM:
@@ -29,39 +29,39 @@ int setAndCheckRedeclared(AST *node)
     		{
 
         		case AST_INT:
-				tableNode = hashFind(node->symbol->text);
-				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
+
+				if (node->symbol->type == VAR_INT || node->symbol->type == VAR_FLOAT || node->symbol->type == VAR_BYTE)
 				{
 					fprintf(stderr, "Identifier %s redeclared\n", node->symbol->text);
 					result = -1;
 				}
 				else
 				{
-					tableNode->type = VAR_INT;
+					node->symbol->type = VAR_INT;
 				}
 				 break;
 			case AST_BYTE:
-				tableNode = hashFind(node->symbol->text);
-				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
+
+				if (node->symbol->type == VAR_INT || node->symbol->type == VAR_FLOAT || node->symbol->type == VAR_BYTE)
 				{
 					fprintf(stderr, "ERROR: Identifier %s redeclared\n", node->symbol->text);
 					result = -1;
 				}
 				else
 				{
-					tableNode->type = VAR_BYTE;
+					node->symbol->type = VAR_BYTE;
 				}
 				 break;
 			case AST_FLOAT:
-				tableNode = hashFind(node->symbol->text);
-				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
+
+				if (node->symbol->type == VAR_INT || node->symbol->type == VAR_FLOAT || node->symbol->type == VAR_BYTE)
 				{
 					fprintf(stderr, "ERROR: Identifier %s redeclared\n", node->symbol->text);
 					result = -1;
 				}
 				else
 				{
-					tableNode->type = VAR_FLOAT;
+					node->symbol->type = VAR_FLOAT;
 
 				}
 				break;
@@ -102,41 +102,41 @@ int setAndCheckRedeclared(AST *node)
     		{
 
         		case AST_INT:
-				tableNode = hashFind(node->symbol->text);
-				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
+
+				if (node->symbol->type == VAR_INT || node->symbol->type == VAR_FLOAT || node->symbol->type == VAR_BYTE)
 				{
 					fprintf(stderr, "ERROR: Identifier %s redeclared\n", node->symbol->text);
 					result = -1;
 				}
 				else
 				{
-					tableNode->type = VAR_INT;
+					node->symbol->type = VAR_INT;
 
 				}
 				 break;
 			case AST_BYTE:
-				tableNode = hashFind(node->symbol->text);
-				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
+
+				if (node->symbol->type == VAR_INT || node->symbol->type == VAR_FLOAT || node->symbol->type == VAR_BYTE)
 				{
 					fprintf(stderr, "ERROR: Identifier %s redeclared\n", node->symbol->text);
 					result = -1;
 				}
 				else
 				{
-					tableNode->type = VAR_BYTE;
+					node->symbol->type = VAR_BYTE;
 
 				}
 				 break;
 			case AST_FLOAT:
-				tableNode = hashFind(node->symbol->text);
-				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
+
+				if (node->symbol->type == VAR_INT || node->symbol->type == VAR_FLOAT || node->symbol->type == VAR_BYTE)
 				{
 					fprintf(stderr, "ERROR: Identifier %s redeclared\n", node->symbol->text);
 					result = -1;
 				}
 				else
 				{
-					tableNode->type = VAR_FLOAT;
+					node->symbol->type = VAR_FLOAT;
 
 				}
 				break;
@@ -170,41 +170,41 @@ int setAndCheckRedeclared(AST *node)
     		{
 
         		case AST_INT:
-				tableNode = hashFind(node->symbol->text);
-				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
+
+				if (node->symbol->type == VAR_INT || node->symbol->type == VAR_FLOAT || node->symbol->type == VAR_BYTE)
 				{
 					fprintf(stderr, "ERROR: Identifier %s redeclared\n", node->symbol->text);
 					result = -1;
 				}
 				else
 				{
-					tableNode->type = VAR_INT;
+					node->symbol->type = VAR_INT;
 
 				}
 				 break;
 			case AST_BYTE:
-				tableNode = hashFind(node->symbol->text);
-				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
+
+				if (node->symbol->type == VAR_INT || node->symbol->type == VAR_FLOAT || node->symbol->type == VAR_BYTE)
 				{
 					fprintf(stderr, "ERROR: Identifier %s redeclared\n", node->symbol->text);
 					result = -1;
 				}
 				else
 				{
-					tableNode->type = VAR_BYTE;
+					node->symbol->type = VAR_BYTE;
 
 				}
 				 break;
 			case AST_FLOAT:
-				tableNode = hashFind(node->symbol->text);
-				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
+
+				if (node->symbol->type == VAR_INT || node->symbol->type == VAR_FLOAT || node->symbol->type == VAR_BYTE)
 				{
 					fprintf(stderr, "ERROR: Identifier %s redeclared\n", node->symbol->text);
 					result = -1;
 				}
 				else
 				{
-					tableNode->type = VAR_FLOAT;
+					node->symbol->type = VAR_FLOAT;
 
 				}
 				break;
@@ -236,41 +236,41 @@ int setAndCheckRedeclared(AST *node)
     		{
 
         		case AST_INT:
-				tableNode = hashFind(node->symbol->text);
-				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
+
+				if (node->symbol->type == VAR_INT || node->symbol->type == VAR_FLOAT || node->symbol->type == VAR_BYTE)
 				{
 					fprintf(stderr, "ERROR: Identifier %s redeclared\n", node->symbol->text);
 					result = -1;
 				}
 				else
 				{
-					tableNode->type = VAR_INT;
+					node->symbol->type = VAR_INT;
 
 				}
 				 break;
 			case AST_BYTE:
-				tableNode = hashFind(node->symbol->text);
-				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
+
+				if (node->symbol->type == VAR_INT || node->symbol->type == VAR_FLOAT || node->symbol->type == VAR_BYTE)
 				{
 					fprintf(stderr, "ERROR: Identifier %s redeclared\n", node->symbol->text);
 					result = -1;
 				}
 				else
 				{
-					tableNode->type = VAR_BYTE;
+					node->symbol->type = VAR_BYTE;
 
 				}
 				 break;
 			case AST_FLOAT:
-				tableNode = hashFind(node->symbol->text);
-				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
+
+				if (node->symbol->type == VAR_INT || node->symbol->type == VAR_FLOAT || node->symbol->type == VAR_BYTE)
 				{
 					fprintf(stderr, "ERROR: Identifier %s redeclared\n", node->symbol->text);
 					result = -1;
 				}
 				else
 				{
-					tableNode->type = VAR_FLOAT;
+					node->symbol->type = VAR_FLOAT;
 
 				}
 				break;
@@ -303,7 +303,7 @@ int setAndCheckRedeclared(AST *node)
 int checkUndeclared(AST* node)
 {
 	int i, result = 0; //result = 0 -> check sucessfull
-	NODE *tableNode;
+
     	if(node == 0)
         	return 0;
 
@@ -320,12 +320,12 @@ int checkUndeclared(AST* node)
 		case AST_IDENTIFIER:
 		case AST_ARR_POS:
 		case AST_FUNC_CALL:
-			tableNode = hashFind(node->symbol->text);
-			if (tableNode->type != VAR_INT && tableNode->type != VAR_FLOAT && tableNode->type != VAR_BYTE)
+
+			if (node->symbol->type != VAR_INT && node->symbol->type != VAR_FLOAT && node->symbol->type != VAR_BYTE)
 			{
 				fprintf(stderr, "ERROR: Undeclared identifier: %s\n", node->symbol->text);
 				result = -1;
-				tableNode->type = VAR_UNDECLARED;
+				node->symbol->type = VAR_UNDECLARED;
 			}
 	}
 	return result;
@@ -520,6 +520,91 @@ int checkVectorIndex(AST *node)
         {
             if (isNumber(node->son[i]) != 0)
                 result = -1;
+        }
+    }
+    return result;
+}
+
+int checkVars(AST *node)
+{
+    int i, result = 0; //result = 0 -> check sucessfull
+    	if(node == 0)
+        	return 0;
+	for(i = 0; i < MAX_SONS; ++i )
+	{
+		if (checkVars(node->son[i]) != 0)
+			result = -1;
+	}
+	if(node->type == AST_ARR_POS)
+    {
+        if (node->symbol && node->symbol->nature != VECTOR)
+        {
+            result = -1;
+            fprintf(stderr, "ERROR: Incompatible nature of variable %s\n", node->symbol->text);
+        }
+        switch(node->son[0]->symbol->type)
+        {
+            case VAR_INT:
+            case VAR_BYTE:
+                if (node->son[0]->type == AST_IDENTIFIER)
+                {
+                    fprintf(stderr, "something went wrong\n");
+                    result = -1;
+                }
+                if (node->son[0]->type != AST_CONST_BYTE && node->son[0]->type != AST_CONST_INT && node->son[0]->type != VAR_BYTE && node->son[0]->type != VAR_INT)
+                {
+                        fprintf(stderr, "ERROR: Incompatible types for variable %s", node->symbol->text);
+                        result = -1;
+                }
+                break;
+            case VAR_FLOAT:
+                if (node->son[0]->type == AST_IDENTIFIER)
+                {
+                    fprintf(stderr, "something went wrong\n");
+                    result = -1;
+                }
+                if (node->son[0]->type != AST_CONST_FLOAT && node->son[0]->type != VAR_FLOAT)
+                {
+                        fprintf(stderr, "ERROR: Incompatible types for variable %s", node->symbol->text);
+                        result = -1;
+                }
+                break;
+        }
+    }
+    else if (node->type == AST_ATTRIB)
+    {
+        if (node->symbol && node->symbol->nature != SCALAR)
+        {
+            result = -1;
+            fprintf(stderr, "ERROR: Incompatible nature of variable %s\n", node->symbol->text);
+        }
+        switch(node->symbol->type)
+        {
+            case VAR_INT:
+            case VAR_BYTE:
+                if (node->son[0]->type == AST_IDENTIFIER)
+                {
+                    fprintf(stderr, "something went wrong\n");
+                    result = -1;
+                }
+                if (node->son[0]->type != AST_CONST_BYTE && node->son[0]->type != AST_CONST_INT && node->son[0]->type != VAR_BYTE && node->son[0]->type != VAR_INT)
+                {
+                        fprintf(stderr, "ERROR: Incompatible types for variable %s", node->symbol->text);
+                        result = -1;
+                }
+                break;
+            case VAR_FLOAT:
+                if (node->son[0]->type == AST_IDENTIFIER)
+                {
+                    fprintf(stderr, "something went wrong\n");
+                    result = -1;
+                }
+                if (node->son[0]->type != AST_CONST_FLOAT && node->son[0]->type != VAR_FLOAT)
+                {
+                        fprintf(stderr, "ERROR: Incompatible types for variable %s", node->symbol->text);
+                        result = -1;
+                }
+                break;
         }
     }
     return result;
