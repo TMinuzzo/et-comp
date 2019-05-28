@@ -49,18 +49,23 @@ int main(int argc, char **argv)
 		//exit(0);
 	}
 	semantic = setAndCheckRedeclared(root);
-	fprintf(stderr,"semantic result = %d\n", semantic);
-	hashPrint();
-	semantic = checkUndeclared(root);
-	fprintf(stderr,"semantic result = %d\n", semantic);
-	semantic = checkFunctions(root);
-	fprintf(stderr,"semantic result = %d\n", semantic);
-	semantic = checkAritExpressions(root);
-	fprintf(stderr,"semantic result = %d\n", semantic);
-	semantic = checkStrings(root);
-	fprintf(stderr,"semantic result = %d\n", semantic);
-	semantic = checkVectorIndex(root);
-	fprintf(stderr,"semantic result = %d\n", semantic);
-	semantic = checkVars(root);
-	fprintf(stderr,"semantic result = %d\n", semantic);
+	semantic += checkUndeclared(root);
+	semantic += checkFunctions(root);
+	semantic += checkAritExpressions(root);
+	semantic += checkStrings(root);
+	semantic += checkVectorIndex(root);
+	semantic += checkVars(root);
+	semantic += checkIfBooleans(root);
+	semantic += checkReturns(root);
+
+	if (semantic != 0)
+    {
+        fprintf(stderr, "Compilation terminated because of errors\n.");
+        exit(4);
+    }
+    else
+    {
+        fprintf(stderr, "Successful analysis.\n");
+        return 0;
+    }
 }

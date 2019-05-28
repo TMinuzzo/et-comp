@@ -455,7 +455,11 @@ int checkAritExpressions(AST *node)
 					fprintf(stderr, "ERROR: Invalid operands for boolean expression\n");
 					return -1;
 				}
-				else return result;
+				else
+                {
+                    node->type = VAR_BOOLEAN;
+                    return result;
+                }
 			else
 				return -1;
 			break;
@@ -606,6 +610,62 @@ int checkVars(AST *node)
                 }
                 break;
         }
+    }
+    return result;
+}
+
+int checkIfBooleans(AST *node)
+{
+    int i, result = 0; //result = 0 -> check sucessfull
+    	if(node == 0)
+        	return 0;
+	for(i = 0; i < MAX_SONS; ++i )
+	{
+		if (checkIfBooleans(node->son[i]) != 0)
+			result = -1;
+	}
+	if (node->type == AST_IF || node->type == AST_IF_ELSE)
+    {
+        if (node->son[0]->type != VAR_BOOLEAN)
+        {
+            result = -1;
+            fprintf(stderr, "ERROR: IF statement is not boolean\n");
+        }
+    }
+    return result;
+}
+
+int searchReturn(AST *node, int typ)
+{
+    int i, result = -1;
+    if (node == 0)
+        return -1;
+    if (node->type == AST_RETURN)
+        if(node->son[0]->type == typ)
+            return 0;
+    for (i=0;i<MAX_SONS;i++)
+    {
+        if (searchReturn(node->son[i], typ) != -1)
+        {
+            result = 0;
+        }
+    }
+    return result;
+}
+
+int checkReturns(AST *node)
+{
+    int i, result = 0; //result = 0 -> check sucessfull
+    	if(node == 0)
+        	return 0;
+	for(i = 0; i < MAX_SONS; ++i )
+	{
+		if (checkIfBooleans(node->son[i]) != 0)
+			result = -1;
+	}
+    if (node->type == AST_HEADER)
+    {
+            result = searchReturn(node->son[i], node->symbol->type);
     }
     return result;
 }
