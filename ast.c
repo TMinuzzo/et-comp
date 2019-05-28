@@ -226,7 +226,7 @@ void compile(AST *node, FILE *out)
             fprintf(out, ":");
             compile(temp->son[0], out);
         }
-        fprintf(out, ";\n");
+        fprintf(out, "; \n");
         break;
     case AST_ARRAY_VALUE:
         compile(temp->son[0], out);
@@ -264,18 +264,18 @@ void compile(AST *node, FILE *out)
         compile(temp->son[0], out);
         if (temp->son[1])
         {
-            fprintf(out, ";\n");
+            fprintf(out, "; \n");
             compile(temp->son[1], out);
         }
         break;
     case AST_RETURN:
-        fprintf(out, "return ");
+        fprintf(out, " return ");
         compile(temp->son[0], out);
         break;
     case AST_EQ:
         fprintf(out, "( ");
         compile(temp->son[0], out);
-        fprintf(out, "==");
+        fprintf(out, " == ");
         compile(temp->son[1], out);
         fprintf(out, ") ");
         break;
@@ -303,7 +303,7 @@ void compile(AST *node, FILE *out)
     case AST_MUL:
         fprintf(out, "( ");
         compile(temp->son[0], out);
-        fprintf(out, "*");
+        fprintf(out, " * ");
         compile(temp->son[1], out);
         fprintf(out, ") ");
         break;
@@ -324,40 +324,40 @@ void compile(AST *node, FILE *out)
     case AST_GE:
         fprintf(out, "( ");
         compile(temp->son[0], out);
-        fprintf(out, ">=");
+        fprintf(out, " >= ");
         compile(temp->son[1], out);
         fprintf(out, ") ");
         break;
     case AST_LE:
         fprintf(out, "( ");
         compile(temp->son[0], out);
-        fprintf(out, "<=");
+        fprintf(out, " <= ");
         compile(temp->son[1], out);
         fprintf(out, ") ");
         break;
     case AST_DIF:
         fprintf(out, "( ");
         compile(temp->son[0], out);
-        fprintf(out, "!=");
+        fprintf(out, " != ");
         compile(temp->son[1], out);
         fprintf(out, ") ");
         break;
     case AST_GREATER:
         fprintf(out, "( ");
         compile(temp->son[0], out);
-        fprintf(out, ">");
+        fprintf(out, " > ");
         compile(temp->son[1], out);
         fprintf(out, ") ");
         break;
     case AST_LESS:
         fprintf(out, "( ");
         compile(temp->son[0], out);
-        fprintf(out, "<");
+        fprintf(out, " < ");
         compile(temp->son[1], out);
         fprintf(out, ") ");
         break;
     case AST_NOT:
-        fprintf(out, "not ");
+        fprintf(out, " not ");
         compile(temp->son[0], out);
         break;
     case AST_IDENTIFIER:
@@ -379,7 +379,7 @@ void compile(AST *node, FILE *out)
         fprintf(out, "]");
         break;
     case AST_PRINT:
-        fprintf(out, "print ");
+        fprintf(out, " print ");
         compile(temp->son[0], out);
         break;
     case AST_PRINT_ELEM:
@@ -391,14 +391,14 @@ void compile(AST *node, FILE *out)
         }
         break;
     case AST_READ:
-        fprintf(out, "read ");
+        fprintf(out, " read ");
         fprintf(out, "%s", node->symbol->text);
         break;
     case AST_LEAP:
-        fprintf(out, "leap");
+        fprintf(out, " leap ");
         break;
     case AST_LOOP:
-        fprintf(out, "loop (");
+        fprintf(out, " loop (");
         compile(temp->son[0], out);
         fprintf(out, ") \n");
         compile(temp->son[1], out);
@@ -419,15 +419,15 @@ void compile(AST *node, FILE *out)
     case AST_IF:
         fprintf(out, "if (");
         compile(temp->son[0], out);
-        fprintf(out, ") then\n");
+        fprintf(out, ") then \n");
         compile(temp->son[1], out);
         break;
     case AST_IF_ELSE:
-        fprintf(out, "if (");
+        fprintf(out, " if (");
         compile(temp->son[0], out);
         fprintf(out, ") then \n");
         compile(temp->son[1], out);
-        fprintf(out, "else \n");
+        fprintf(out, " else \n");
         compile(temp->son[2], out);
         break;
     default:

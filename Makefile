@@ -18,7 +18,7 @@ semantic.o: semantic.c
 	gcc -c semantic.c
 
 zip:
-	tar cvzf etapa3.tgz Makefile main.c parser.y scanner.l hash.c hash.h ast.c ast.h
+	tar cvzf etapa4.tgz Makefile main.c parser.y scanner.l hash.c hash.h ast.c ast.h semantic.c semantic.h
 
 clean:
 	rm -f *.o lex.yy.* y.tab.*  etapa4
