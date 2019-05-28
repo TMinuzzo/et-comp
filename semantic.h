@@ -19,8 +19,8 @@ int setAndCheckRedeclared(AST *node);
 int checkUndeclared(AST *node);
 int checkFunctions(AST *node);
 int checkAritExpressions(AST *node);
-// int checkVectorIndex
-int checkStrings();
+int checkVectorIndex(AST *node);
+int checkStrings(AST *node);
 // int checkAttribs
 // int checkReturns
 // int checkIfBooleans

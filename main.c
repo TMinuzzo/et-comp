@@ -59,4 +59,6 @@ int main(int argc, char **argv)
 	fprintf(stderr,"semantic result = %d\n", semantic);
 	semantic = checkStrings(root);
 	fprintf(stderr,"semantic result = %d\n", semantic);
+	semantic = checkVectorIndex(root);
+	fprintf(stderr,"semantic result = %d\n", semantic);
 }

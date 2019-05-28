@@ -7,28 +7,28 @@ int setAndCheckRedeclared(AST *node)
     int i, result = 0; //result = 0 -> check sucessfull
     if(node == 0)
         return 0;
-    
+
     for(i = 0; i < MAX_SONS; ++i )
     {
         if (setAndCheckRedeclared(node->son[i]) != 0)
 	result = -1;
     }
 
- 
+
 
     switch (node->type)
     {
 	NODE *tableNode;
 	case AST_GLOBAL_DEC:
 	case AST_READ:
-	case AST_PARAM:	
+	case AST_PARAM:
 	case AST_GLOBAL_DEC_INIT:
 	    if (node->son[0])
 	    {
 		switch(node->son[0]->type)
     		{
-			
-        		case AST_INT: 
+
+        		case AST_INT:
 				tableNode = hashFind(node->symbol->text);
 				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
 				{
@@ -40,7 +40,7 @@ int setAndCheckRedeclared(AST *node)
 					tableNode->type = VAR_INT;
 				}
 				 break;
-			case AST_BYTE: 
+			case AST_BYTE:
 				tableNode = hashFind(node->symbol->text);
 				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
 				{
@@ -52,7 +52,7 @@ int setAndCheckRedeclared(AST *node)
 					tableNode->type = VAR_BYTE;
 				}
 				 break;
-			case AST_FLOAT: 
+			case AST_FLOAT:
 				tableNode = hashFind(node->symbol->text);
 				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
 				{
@@ -65,19 +65,19 @@ int setAndCheckRedeclared(AST *node)
 
 				}
 				break;
-			case AST_CONST_STRING: 
+			case AST_CONST_STRING:
 				node->symbol->type = LIT_STR;
 				break;
-			case AST_CONST_INT: 
+			case AST_CONST_INT:
 				node->symbol->type = LIT_INTEG;
 				break;
-			case AST_CONST_FLOAT: 
+			case AST_CONST_FLOAT:
 				node->symbol->type = LIT_FLOATING;
 				break;
-			case AST_CONST_BYTE: 
+			case AST_CONST_BYTE:
 				node->symbol->type = LIT_BYTE;
 				break;
-			default: result = -1; fprintf(stderr, "ERROR: Type not recognized for identifier %s", node->symbol->text);            
+			default: result = -1; fprintf(stderr, "ERROR: Type not recognized for identifier %s", node->symbol->text);
    		}
 	     }
 	     else
@@ -100,8 +100,8 @@ int setAndCheckRedeclared(AST *node)
 	    {
 		switch(node->son[0]->type)
     		{
-			
-        		case AST_INT: 
+
+        		case AST_INT:
 				tableNode = hashFind(node->symbol->text);
 				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
 				{
@@ -114,7 +114,7 @@ int setAndCheckRedeclared(AST *node)
 
 				}
 				 break;
-			case AST_BYTE: 
+			case AST_BYTE:
 				tableNode = hashFind(node->symbol->text);
 				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
 				{
@@ -127,7 +127,7 @@ int setAndCheckRedeclared(AST *node)
 
 				}
 				 break;
-			case AST_FLOAT: 
+			case AST_FLOAT:
 				tableNode = hashFind(node->symbol->text);
 				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
 				{
@@ -140,19 +140,19 @@ int setAndCheckRedeclared(AST *node)
 
 				}
 				break;
-			case AST_CONST_STRING: 
+			case AST_CONST_STRING:
 				node->symbol->type = LIT_STR;
 				break;
-			case AST_CONST_INT: 
+			case AST_CONST_INT:
 				node->symbol->type = LIT_INTEG;
 				break;
-			case AST_CONST_FLOAT: 
+			case AST_CONST_FLOAT:
 				node->symbol->type = LIT_FLOATING;
 				break;
-			case AST_CONST_BYTE: 
+			case AST_CONST_BYTE:
 				node->symbol->type = LIT_BYTE;
 				break;
-			default: result = -1; fprintf(stderr, "ERROR: Type not recognized for identifier %s", node->symbol->text);            
+			default: result = -1; fprintf(stderr, "ERROR: Type not recognized for identifier %s", node->symbol->text);
    		}
 	     }
 	     else
@@ -168,8 +168,8 @@ int setAndCheckRedeclared(AST *node)
 	    {
 		switch(node->son[0]->type)
     		{
-			
-        		case AST_INT: 
+
+        		case AST_INT:
 				tableNode = hashFind(node->symbol->text);
 				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
 				{
@@ -179,10 +179,10 @@ int setAndCheckRedeclared(AST *node)
 				else
 				{
 					tableNode->type = VAR_INT;
-					
+
 				}
 				 break;
-			case AST_BYTE: 
+			case AST_BYTE:
 				tableNode = hashFind(node->symbol->text);
 				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
 				{
@@ -195,7 +195,7 @@ int setAndCheckRedeclared(AST *node)
 
 				}
 				 break;
-			case AST_FLOAT: 
+			case AST_FLOAT:
 				tableNode = hashFind(node->symbol->text);
 				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
 				{
@@ -208,19 +208,19 @@ int setAndCheckRedeclared(AST *node)
 
 				}
 				break;
-			case AST_CONST_STRING: 
+			case AST_CONST_STRING:
 				node->symbol->type = LIT_STR;
 				break;
-			case AST_CONST_INT: 
+			case AST_CONST_INT:
 				node->symbol->type = LIT_INTEG;
 				break;
-			case AST_CONST_FLOAT: 
+			case AST_CONST_FLOAT:
 				node->symbol->type = LIT_FLOATING;
 				break;
-			case AST_CONST_BYTE: 
+			case AST_CONST_BYTE:
 				node->symbol->type = LIT_BYTE;
 				break;
-			default: result = -1; fprintf(stderr, "ERROR: Type not recognized for identifier %s", node->symbol->text);            
+			default: result = -1; fprintf(stderr, "ERROR: Type not recognized for identifier %s", node->symbol->text);
    		}
 	     }
 	     else
@@ -234,8 +234,8 @@ int setAndCheckRedeclared(AST *node)
 	    {
 		switch(node->son[0]->type)
     		{
-			
-        		case AST_INT: 
+
+        		case AST_INT:
 				tableNode = hashFind(node->symbol->text);
 				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
 				{
@@ -248,7 +248,7 @@ int setAndCheckRedeclared(AST *node)
 
 				}
 				 break;
-			case AST_BYTE: 
+			case AST_BYTE:
 				tableNode = hashFind(node->symbol->text);
 				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
 				{
@@ -261,7 +261,7 @@ int setAndCheckRedeclared(AST *node)
 
 				}
 				 break;
-			case AST_FLOAT: 
+			case AST_FLOAT:
 				tableNode = hashFind(node->symbol->text);
 				if (tableNode->type == VAR_INT || tableNode->type == VAR_FLOAT || tableNode->type == VAR_BYTE)
 				{
@@ -274,19 +274,19 @@ int setAndCheckRedeclared(AST *node)
 
 				}
 				break;
-			case AST_CONST_STRING: 
+			case AST_CONST_STRING:
 				node->symbol->type = LIT_STR;
 				break;
-			case AST_CONST_INT: 
+			case AST_CONST_INT:
 				node->symbol->type = LIT_INTEG;
 				break;
-			case AST_CONST_FLOAT: 
+			case AST_CONST_FLOAT:
 				node->symbol->type = LIT_FLOATING;
 				break;
-			case AST_CONST_BYTE: 
+			case AST_CONST_BYTE:
 				node->symbol->type = LIT_BYTE;
 				break;
-			default: result = -1; fprintf(stderr, "ERROR: Type not recognized for identifier %s", node->symbol->text);            
+			default: result = -1; fprintf(stderr, "ERROR: Type not recognized for identifier %s", node->symbol->text);
    		}
 	     }
 	     else
@@ -306,7 +306,7 @@ int checkUndeclared(AST* node)
 	NODE *tableNode;
     	if(node == 0)
         	return 0;
-	    
+
 	for(i = 0; i < MAX_SONS; ++i )
 	{
 		if (checkUndeclared(node->son[i]) != 0)
@@ -358,7 +358,7 @@ int checkFunctions(AST *node)
 	AST *callNode;
     	if(node == 0)
         	return 0;
-	    
+
 	for(i = 0; i < MAX_SONS; ++i )
 	{
 		if (checkFunctions(node->son[i]) != 0)
@@ -414,10 +414,10 @@ int checkAritExpressions(AST *node)
 		case AST_DIV:
 		case AST_MUL:
 			if(node->son[0] && node->son[1])
-			{	
+			{
 				if(node->son[0]->symbol == 0 || node->son[1]->symbol == 0)
 				{
-					fprintf(stderr, "ERROR: Arithmetic operands are not numbers\n");					
+					fprintf(stderr, "ERROR: Arithmetic operands are not numbers\n");
 					return -1;
 				}
 
@@ -465,7 +465,7 @@ int checkAritExpressions(AST *node)
 }
 
 int checkStrings(AST *node)
-{	
+{
 	int i, result = 0; //result = 0 -> check sucessfull
     	if(node == 0)
         	return 0;
@@ -484,5 +484,43 @@ int checkStrings(AST *node)
 			else
 				return result;
 	}
-	
+
+}
+
+int isNumber(AST *node)
+{
+    int i, result = 0;
+    if (node == 0)
+        return 0;
+    for(i = 0; i < MAX_SONS; ++i )
+	{
+		if (isNumber(node->son[i]) != 0)
+			result = -1;
+	}
+	if (!(node->symbol && (node->symbol->type == VAR_BYTE || node->symbol->type == VAR_INT || node->type == AST_CONST_BYTE || node->type == AST_CONST_INT)))
+    {
+        result = -1;
+    }
+    return result;
+}
+
+int checkVectorIndex(AST *node)
+{
+	int i, result = 0; //result = 0 -> check sucessfull
+    	if(node == 0)
+        	return 0;
+	for(i = 0; i < MAX_SONS; ++i )
+	{
+		if (checkVectorIndex(node->son[i]) != 0)
+			result = -1;
+	}
+    if (node->type == AST_ARR_POS)
+    {
+        for(i=0;i<MAX_SONS;i++)
+        {
+            if (isNumber(node->son[i]) != 0)
+                result = -1;
+        }
+    }
+    return result;
 }
