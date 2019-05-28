@@ -77,7 +77,7 @@ int setAndCheckRedeclared(AST *node)
 			case AST_CONST_BYTE:
 				node->symbol->type = LIT_BYTE;
 				break;
-			default: result = -1; fprintf(stderr, "ERROR: Type not recognized for identifier %s", node->symbol->text);
+			default: result = -1; fprintf(stderr, "ERROR: Type not recognized for identifier %s\n", node->symbol->text);
    		}
 	     }
 	     else
@@ -220,7 +220,7 @@ int setAndCheckRedeclared(AST *node)
 			case AST_CONST_BYTE:
 				node->symbol->type = LIT_BYTE;
 				break;
-			default: result = -1; fprintf(stderr, "ERROR: Type not recognized for identifier %s", node->symbol->text);
+			default: result = -1; fprintf(stderr, "ERROR: Type not recognized for identifier %s\n", node->symbol->text);
    		}
 	     }
 	     else
@@ -286,7 +286,7 @@ int setAndCheckRedeclared(AST *node)
 			case AST_CONST_BYTE:
 				node->symbol->type = LIT_BYTE;
 				break;
-			default: result = -1; fprintf(stderr, "ERROR: Type not recognized for identifier %s", node->symbol->text);
+			default: result = -1; fprintf(stderr, "ERROR: Type not recognized for identifier %s\n", node->symbol->text);
    		}
 	     }
 	     else
@@ -333,7 +333,7 @@ int checkUndeclared(AST* node)
 
 AST* findFuncDeclaration(NODE *sym, AST* node)
 {
-	int i;
+	int i;	
 	AST *next;
 	if (node == 0)
 		return -1;
@@ -557,7 +557,7 @@ int checkVars(AST *node)
                 }
                 if (node->son[0]->type != AST_CONST_BYTE && node->son[0]->type != AST_CONST_INT && node->son[0]->type != VAR_BYTE && node->son[0]->type != VAR_INT)
                 {
-                        fprintf(stderr, "ERROR: Incompatible types for variable %s", node->symbol->text);
+                        fprintf(stderr, "ERROR: Incompatible types for variable %s\n", node->symbol->text);
                         result = -1;
                 }
                 break;
@@ -569,7 +569,7 @@ int checkVars(AST *node)
                 }
                 if (node->son[0]->type != AST_CONST_FLOAT && node->son[0]->type != VAR_FLOAT)
                 {
-                        fprintf(stderr, "ERROR: Incompatible types for variable %s", node->symbol->text);
+                        fprintf(stderr, "ERROR: Incompatible types for variable %s\n", node->symbol->text);
                         result = -1;
                 }
                 break;
@@ -593,7 +593,7 @@ int checkVars(AST *node)
                 }
                 if (node->son[0]->type != AST_CONST_BYTE && node->son[0]->type != AST_CONST_INT && node->son[0]->type != VAR_BYTE && node->son[0]->type != VAR_INT)
                 {
-                        fprintf(stderr, "ERROR: Incompatible types for variable %s", node->symbol->text);
+                        fprintf(stderr, "ERROR: Incompatible types for variable %s\n", node->symbol->text);
                         result = -1;
                 }
                 break;
@@ -605,7 +605,7 @@ int checkVars(AST *node)
                 }
                 if (node->son[0]->type != AST_CONST_FLOAT && node->son[0]->type != VAR_FLOAT)
                 {
-                        fprintf(stderr, "ERROR: Incompatible types for variable %s", node->symbol->text);
+                        fprintf(stderr, "ERROR: Incompatible types for variable %s\n", node->symbol->text);
                         result = -1;
                 }
                 break;
