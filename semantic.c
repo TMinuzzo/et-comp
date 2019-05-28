@@ -446,12 +446,10 @@ int checkAritExpressions(AST *node)
 		case AST_LESS:
 		case AST_OR:
 		case AST_AND:
-		case AST_NOT:
 			if(node->son[0] && node->son[1])
 				if ((node->son[0]->type != VAR_INT && node->son[0]->type != VAR_FLOAT && node->son[0]->type != VAR_BYTE && node->son[0]->type != AST_CONST_FLOAT && node->son[0]->type != AST_CONST_INT && node->son[0]->type != AST_CONST_BYTE && node->son[0]->type != AST_ADD && node->son[0]->type != AST_SUB && node->son[0]->type != AST_DIV && node->son[0]->type != AST_MUL && node->son[0]->type != AST_IDENTIFIER) ||
 					(node->son[1]->type != VAR_INT && node->son[0]->type != VAR_FLOAT && node->son[1]->type != VAR_BYTE && node->son[1]->type != AST_CONST_FLOAT && node->son[1]->type != AST_CONST_INT && node->son[1]->type != AST_CONST_BYTE && node->son[1]->type != AST_ADD && node->son[1]->type != AST_SUB && node->son[1]->type != AST_DIV && node->son[1]->type != AST_MUL && node->son[1]->type != AST_IDENTIFIER))
 				{
-					fprintf(stderr, "%d, %d\n", node->son[0]->type, node->son[1]->type);
 					fprintf(stderr, "ERROR: Invalid operands for boolean expression\n");
 					return -1;
 				}
@@ -463,7 +461,22 @@ int checkAritExpressions(AST *node)
 			else
 				return -1;
 			break;
-
+		case AST_NOT:
+			if(node->son[0])
+				if (node->son[0]->type != VAR_INT && node->son[0]->type != VAR_FLOAT && node->son[0]->type != VAR_BYTE && node->son[0]->type != AST_CONST_FLOAT && node->son[0]->type != AST_CONST_INT && node->son[0]->type != AST_CONST_BYTE && node->son[0]->type != AST_ADD && node->son[0]->type != AST_SUB && node->son[0]->type != AST_DIV && node->son[0]->type != AST_MUL && node->son[0]->type != AST_IDENTIFIER)
+				{
+					fprintf(stderr, "ERROR: Invalid operands for boolean expression\n");
+					return -1;
+				}
+				else
+                {
+                    node->type = VAR_BOOLEAN;
+                    return result;
+                }
+			else
+				return -1;
+			break;
+		
 		default: return result;
 	}
 }

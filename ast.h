@@ -39,7 +39,6 @@
 
 #define AST_ARR_POS		29
 #define AST_FUNC_CALL		30
-#define AST_CONST		31
 #define AST_ATTRIB		32
 #define AST_ARR_ATTRIB		33
 #define AST_PRINT_ELEM		34

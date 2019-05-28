@@ -119,8 +119,17 @@ void astPrint(AST *node, int level)
     case AST_FUNC_CALL:
         fprintf(stderr, "AST_FUNC_CALL\n");
         break;
-    case AST_CONST:
-        fprintf(stderr, "AST_CONST %s\n", node->symbol->text);
+    case AST_CONST_INT:
+        fprintf(stderr, "AST_CONST_INT %s\n", node->symbol->text);
+        break;
+    case AST_CONST_BYTE:
+        fprintf(stderr, "AST_CONST_BYTE %s\n", node->symbol->text);
+        break;
+    case AST_CONST_FLOAT:
+        fprintf(stderr, "AST_CONST_FLOAT %s\n", node->symbol->text);
+        break;
+    case AST_CONST_STRING:
+        fprintf(stderr, "AST_CONST_STRING %s\n", node->symbol->text);
         break;
     case AST_ATTRIB:
         fprintf(stderr, "AST_ATTRIB\n");
@@ -211,7 +220,16 @@ void compile(AST *node, FILE *out)
     case AST_FLOAT:
         fprintf(out, "float ");
         break;
-    case AST_CONST:
+    case AST_CONST_INT:
+        fprintf(out, " %s", temp->symbol->text);
+        break;
+    case AST_CONST_FLOAT:
+        fprintf(out, " %s", temp->symbol->text);
+        break;
+    case AST_CONST_BYTE:
+        fprintf(out, " %s", temp->symbol->text);
+        break;
+    case AST_CONST_STRING:
         fprintf(out, " %s", temp->symbol->text);
         break;
     case AST_GLOBAL_DEC:
