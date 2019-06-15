@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "hash.h"
@@ -5,45 +6,36 @@
 #include "y.tab.h"
 
 
-extern int running;
-extern int lineNumber;
-int yylex();
-int yyparse();
-int yydebug = 1;
-extern char *yytext;
 extern FILE *yyin;
+extern int SemanticErr;
+extern void initMe(void);
 extern void defineOut(FILE*);
 
-int isRunning(void);
-int getLineNumber(void);
-void initMe(void);
-
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-	FILE *output;
-	if (argc < 3)
-	{
-		fprintf(stderr, "Call: ./etapa3 input output\n");
-		exit(1);
-	}
-	if ((yyin = fopen(argv[1], "r")) == 0)
-	{
-		fprintf(stderr, "Cannot open file\n");
-		exit(2);
-	}
-	initMe();
-
-	if (0 == (output = fopen(argv[2], "w")))
-	{
-		printf("Cannot create file %s... \n", argv[2]);
-		exit(1);
-	}
-	defineOut(output);
-
-	int result = yyparse();
-	if (result == 0)
-	{
-		fprintf(stderr, "Sucesso");
-		exit(0);
-	}
+  initMe();
+	FILE* output;
+  if (argc < 3)
+  {
+    printf("[CALL_ERROR] - call: ./etapa4 <input> <output>\n");
+    exit(1);
+  }
+  if (0==(yyin = fopen(argv[1],"r")))
+  {
+    printf("[FILE_ERROR] - Cannot open file %s\n",argv[1]);
+    exit(2);
+  }
+  if (0==(output = fopen(argv[2],"w")))
+  {
+    printf("[FILE_ERROR] - Cannot create file %s\n",argv[2]);
+    exit(2);
+  }
+  defineOut(output);
+  yyparse();
+  if (SemanticErr == 1)
+  {
+    exit(4);
+  }
+  printf("[SUCCESS] - Compilation end.\n");
+  return 0;
 }

@@ -7,7 +7,7 @@
 #define MAX_SONS 4
 
 
-#define AST_DEC_LIST        	1
+#define AST_DEC_FUNC_LIST       1
 #define AST_ARRAY	            2
 #define AST_ARRAY_INIT	       	3
 #define AST_ARRAY_VALUE       	4
@@ -60,16 +60,25 @@
 #define AST_BLOCK		46
 #define AST_IF_ELSE		47
 #define AST_ARGS		48
+#define AST_LIT_INTEGER	49
+#define AST_LIT_FLOAT	50
+#define AST_LIT_CHAR	51
+#define AST_LIT_STRING	52
+#define AST_DEC_VAR_LIST 53
 
+#define AST_BOOL 100
 
 typedef struct ast_node{
 	int type;
 	struct ast_node *son[MAX_SONS];
 	NODE* symbol;
+	int dataType;
+	float value;
+	int line;
 } AST;
 
 FILE *out;
-AST* astCreate(int type, NODE* symbol, AST* son0, AST* son1, AST* son2, AST* son3);
+AST* astCreate(int type, NODE* symbol, AST* son0, AST* son1, AST* son2, AST* son3, int line);
 void astPrint(AST* node, int level);
 void compile(AST*node, FILE* out);
 

@@ -3,6 +3,7 @@
 #include "hash.h"
 #include "ast.h"
 #include "y.tab.h"
+#include "main.c"
 
 
 int lineNumber = 1;
@@ -42,11 +43,11 @@ BLOCK_COMMENT "XXX"
 "\t"
 "\n"					{ lineNumber++; }
 {OPERATOR}				{ return yytext[0]; }
-{IDENTIFIER}			{ yylval.symbol = hashInsert(TK_IDENTIFIER, yytext); return TK_IDENTIFIER; }
-{INTEGER}				{ yylval.symbol = hashInsert(LIT_INTEGER, yytext); return LIT_INTEGER; }
-{INTEGER}"."{INTEGER}	{ yylval.symbol = hashInsert(LIT_FLOAT, yytext); return LIT_FLOAT; }		
-['].[']					{ yylval.symbol = hashInsert(LIT_CHAR, yytext); return LIT_CHAR; }
-{STRING}				{ yylval.symbol = hashInsert(LIT_STRING, yytext); return LIT_STRING; }
+{IDENTIFIER}			{ yylval.symbol = hashInsert(SYMBOL_IDENTIFIER, yytext); return TK_IDENTIFIER; }
+{INTEGER}				{ yylval.symbol = hashInsert(SYMBOL_LITINT, yytext); return LIT_INTEGER; }
+{INTEGER}"."{INTEGER}	{ yylval.symbol = hashInsert(SYMBOL_LITFLOAT, yytext); return LIT_FLOAT; }		
+['].[']					{ yylval.symbol = hashInsert(SYMBOL_LITCHAR, yytext); return LIT_CHAR; }
+{STRING}				{ yylval.symbol = hashInsert(SYMBOL_LITSTRING, yytext); return LIT_STRING; }
 {LINE_COMMENT}				
 {BLOCK_COMMENT}					{ BEGIN(BLOCK_COMMENT); }
 <BLOCK_COMMENT>{BLOCK_COMMENT}	{ BEGIN(INITIAL); }

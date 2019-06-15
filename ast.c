@@ -5,7 +5,7 @@
 
 extern FILE *out;
 
-AST *astCreate(int type, NODE *symbol, AST *son0, AST *son1, AST *son2, AST *son3)
+AST *astCreate(int type, NODE *symbol, AST *son0, AST *son1, AST *son2, AST *son3, int line)
 {
     AST *newnode;
     newnode = (AST *)calloc(1, sizeof(AST));
@@ -15,6 +15,7 @@ AST *astCreate(int type, NODE *symbol, AST *son0, AST *son1, AST *son2, AST *son
     newnode->son[1] = son1;
     newnode->son[2] = son2;
     newnode->son[3] = son3;
+    newnode->line = line;
     return newnode;
 }
 
@@ -31,8 +32,11 @@ void astPrint(AST *node, int level)
     }
     switch (node->type)
     {
-    case AST_DEC_LIST:
-        fprintf(stderr, "AST_DEC_LIST\n");
+    case AST_DEC_FUNC_LIST:
+        fprintf(stderr, "AST_DEC_FUNC_LIST\n");
+        break;
+    case AST_DEC_VAR_LIST:
+        fprintf(stderr, "AST_DEC_VAR_LIST\n");
         break;
     case AST_ARRAY:
         fprintf(stderr, "AST_ARRAY %s\n", node->symbol->text);
@@ -119,8 +123,17 @@ void astPrint(AST *node, int level)
     case AST_FUNC_CALL:
         fprintf(stderr, "AST_FUNC_CALL\n");
         break;
-    case AST_CONST:
-        fprintf(stderr, "AST_CONST %s\n", node->symbol->text);
+    case AST_LIT_INTEGER:
+        fprintf(stderr, "AST_LIT_INTEGER %s\n", node->symbol->text);
+        break;
+    case AST_LIT_FLOAT:
+        fprintf(stderr, "AST_LIT_FLOAT %s\n", node->symbol->text);
+        break;
+    case AST_LIT_CHAR:
+        fprintf(stderr, "AST_LIT_CHAR %s\n", node->symbol->text);
+        break;
+    case AST_LIT_STRING:
+        fprintf(stderr, "AST_LIT_STRING %s\n", node->symbol->text);
         break;
     case AST_ATTRIB:
         fprintf(stderr, "AST_ATTRIB\n");
@@ -191,7 +204,12 @@ void compile(AST *node, FILE *out)
     }
     switch (temp->type)
     {
-    case AST_DEC_LIST:
+    case AST_DEC_FUNC_LIST:
+        compile(temp->son[0], out);
+        fprintf(out, ";\n");
+        compile(temp->son[1], out);
+        break;
+    case AST_DEC_VAR_LIST:
         compile(temp->son[0], out);
         fprintf(out, ";\n");
         compile(temp->son[1], out);
@@ -211,7 +229,16 @@ void compile(AST *node, FILE *out)
     case AST_FLOAT:
         fprintf(out, "float ");
         break;
-    case AST_CONST:
+    case AST_LIT_INTEGER:
+        fprintf(out, " %s", temp->symbol->text);
+        break;
+    case AST_LIT_FLOAT:
+        fprintf(out, " %s", temp->symbol->text);
+        break;
+    case AST_LIT_CHAR:
+        fprintf(out, " %s", temp->symbol->text);
+        break;
+    case AST_LIT_STRING:
         fprintf(out, " %s", temp->symbol->text);
         break;
     case AST_GLOBAL_DEC:
@@ -221,10 +248,10 @@ void compile(AST *node, FILE *out)
         break;
     case AST_ARRAY:
         fprintf(out, "[%s]", temp->symbol->text);
-        if (temp->son[0])
+        if (temp->son[1])
         {
             fprintf(out, ":");
-            compile(temp->son[0], out);
+            compile(temp->son[1], out);
         }
         fprintf(out, ";\n");
         break;
