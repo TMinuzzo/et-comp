@@ -117,12 +117,13 @@
 				setDeclaration($1);
 				checkUndeclared();
 				checkOperands($1);
-				//if(out != NULL && SemanticErr != 1){ compile($1, out) ; }
+				if(out != NULL && SemanticErr != 1){ compile($1, out) ; }
 			} 
 		   ;
 
-	declist: dec_function declist 			{ $$ = astCreate(AST_DEC_FUNC_LIST, 0, $1, $2, 0, 0, getLineNumber()); } 
-		   | dec_var declist				{ $$ = astCreate(AST_DEC_VAR_LIST, 0, $1, $2, 0, 0, getLineNumber()); }
+	declist: 
+		    dec_var declist				{ $$ = astCreate(AST_DEC_VAR_LIST, 0, $1, $2, 0, 0, getLineNumber()); }
+			|	function declist 			{ $$ = astCreate(AST_DEC_FUNC_LIST, 0, $1, $2, 0, 0, getLineNumber()); } 
 		   | 								{ $$ = 0; }
 		   ;		
 	dec_function:  function						{ $$ = $1; }

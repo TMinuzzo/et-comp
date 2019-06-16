@@ -1,6 +1,6 @@
 #include "semantic.h"
 
-int SemanticErrorFlag;
+int SemanticErr;
 AST* rootNode = 0;
 
 void setDeclaration(AST* node){
@@ -12,6 +12,7 @@ void setDeclaration(AST* node){
 	if (rootNode == 0)
     {
         rootNode = node;
+        fprintf(stderr, "ROOT NODE!!!! %d\n",rootNode->type);
     }
 	for(i = 0; i < MAX_SONS; i++)
     {
@@ -27,7 +28,7 @@ void setDeclaration(AST* node){
 			if(node->symbol->type != SYMBOL_IDENTIFIER)
             {
 				fprintf(stderr, "Linha %i: Redeclaração %s.\n", node->line, node->symbol->text);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			node->symbol->type = SYMBOL_SCALAR;
 			if (node->son[0]->type == AST_INT || node->son[0]->type == AST_BYTE)
@@ -50,7 +51,7 @@ void setDeclaration(AST* node){
 			if(node->symbol->type != SYMBOL_IDENTIFIER)
             {
 				fprintf(stderr, "Linha %i: Redeclaração %s.\n", node->line, node->symbol->text);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			node->symbol->type = SYMBOL_ARRAY;
 			if (node->son[0]->type == AST_INT|| node->son[0]->type == AST_BYTE)
@@ -72,7 +73,7 @@ void setDeclaration(AST* node){
 			if(node->symbol->type != SYMBOL_IDENTIFIER)
             {
 				fprintf(stderr, "Linha %i: Redeclaração %s.\n", node->line, node->symbol->text);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			node->symbol->type = SYMBOL_FUNCTION;
 			if (node->son[0]->type == AST_INT || node->son[0]->type == AST_BYTE)
@@ -94,7 +95,7 @@ void setDeclaration(AST* node){
 			if(node->symbol->type != SYMBOL_IDENTIFIER)
             {
 				fprintf(stderr, "Linha %i: Redeclaração %s.\n", node->line, node->symbol->text);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			node->symbol->type = SYMBOL_SCALAR;
 			if (node->son[0]->type == AST_INT || node->son[0]->type == AST_BYTE)
@@ -119,7 +120,7 @@ void checkUndeclared(){
 	Funcition: Realiza a checagem do uso correto das expressões conforme a operação associada
 	Parameters:
 		AST* node: Ponteiro para nodo a ser analisado
-	Return: Não retorna nenhum valor, mas altera a variavel global "SemanticErrorFlag" para 1 se identificar erro
+	Return: Não retorna nenhum valor, mas altera a variavel global "SemanticErr" para 1 se identificar erro
 */
 void checkOperands(AST* node){
 	int i;
@@ -185,7 +186,7 @@ void checkOperands(AST* node){
 			if( node->son[0]->dataType != node->son[1]->dataType )
             {
 				fprintf(stderr, "Linha %i: Veriável %s inicializada precisa ser do mesmo tipo.\n", node->line, node->symbol->text);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			node->dataType = node->symbol->datatype;
 		    break;
@@ -195,7 +196,7 @@ void checkOperands(AST* node){
 			if(  isFloat(node->son[0]->dataType) || isBoolean(node->son[0]->dataType) )
             {
 				fprintf(stderr, "Linha %i: Array %s precisa ser inicializado com um valor inteiro\n",node->line, node->symbol->text);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			node->dataType = node->symbol->datatype;
 		    break;
@@ -204,7 +205,7 @@ void checkOperands(AST* node){
 			if( isFloat(node->son[1]->dataType) || isBoolean(node->son[1]->dataType) )
             {
 				fprintf(stderr, "[SEMANTIC] - Line %i: Size in array %s must be an integer\n",node->line, node->symbol->text);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			node->dataType = node->symbol->datatype;
 			err = checkArray(node);
@@ -212,15 +213,15 @@ void checkOperands(AST* node){
             {
 				case 1:
 					fprintf(stderr, "[SEMANTIC] - Line %i: Array %s initialisation must have all elements the same type as the array.\n", node->line, node->symbol->text);
-					SemanticErrorFlag = 1;
+					SemanticErr = 1;
 				    break;
 				case 2:
 				 	fprintf(stderr,"[SEMANTIC] - Line %i:Array %s is missing parameters \n", node->line, node->symbol->text);
-					SemanticErrorFlag = 1;
+					SemanticErr = 1;
 				    break;
 				case 3:
 					fprintf(stderr,"[SEMANTIC] - Line %i: Array %s has too much parameters \n", node->line, node->symbol->text);
-					SemanticErrorFlag = 1;
+					SemanticErr = 1;
 				    break;
 				default : break;
 			}
@@ -234,7 +235,7 @@ void checkOperands(AST* node){
 			if (err == 1)
             {
 				fprintf(stderr, "Linha %i: Retorno da função %s não corresponde seu tipo\n", node->line, node->symbol->text);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 		    break;
 
@@ -244,7 +245,7 @@ void checkOperands(AST* node){
 				 node->symbol->type != SYMBOL_LITFLOAT && node->symbol->type != SYMBOL_LITCHAR )
 			{
 				fprintf(stderr, "Linha %i: Identificador %s precisa ser um escalar \n", node->line, node->symbol->text);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			if ( node->symbol->datatype ==  DATATYPE_INT || node->symbol->datatype ==  DATATYPE_BYTE )
 			{
@@ -258,15 +259,16 @@ void checkOperands(AST* node){
 
 		case AST_ARR_POS:
             if(node->symbol == 0){return;}
-			if ( isBoolean(node->son[0]->dataType) || isFloat(node->son[0]->dataType))
+
+			if ( node->son[0]->type !=  AST_LIT_INTEGER)
 			{
 				fprintf(stderr, "Linha %i: Expressão no array %s precisa ser um inteiro.\n", node->line, node->symbol->text);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			if (node->symbol->type != SYMBOL_ARRAY)
 			{
 				fprintf(stderr, "Linha %i: Identificador %s não é um array\n", node->line, node->symbol->text);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			if ( node->symbol->datatype ==  DATATYPE_INT || node->symbol->datatype ==  DATATYPE_BYTE )
 			{
@@ -283,13 +285,13 @@ void checkOperands(AST* node){
 			if(node->symbol->type != SYMBOL_FUNCTION)
 			{
 				fprintf(stderr, "Linha %i: %s não é uma função\n", node->line, node->symbol->text );
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			err = checkFunctionParams(node);
 			if (err == 1)
 			{
 				fprintf(stderr, "Linha %i:  parâmetros da função %s não compatíveis\n", node->line, node->symbol->text);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			node->dataType = node->symbol->datatype;
 			break;
@@ -298,7 +300,7 @@ void checkOperands(AST* node){
 			if( isBoolean(node->son[0]->dataType) || isBoolean(node->son[1]->dataType) )
 			{
 				fprintf(stderr, "Linha %i: Operando inválido em operação aritmética\n", node->line);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			node->dataType = node->son[0]->dataType;
 			if (node->son[0]->dataType != node->son[1]->dataType )
@@ -315,7 +317,7 @@ void checkOperands(AST* node){
 			if( isBoolean(node->son[0]->dataType) || isBoolean(node->son[1]->dataType) )
 			{
 				fprintf(stderr, "Linha %i: Operando inválido em operação aritmética\n", node->line);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			node->dataType = node->son[0]->dataType;
 			if (node->son[0]->dataType != node->son[1]->dataType )
@@ -332,7 +334,7 @@ void checkOperands(AST* node){
 			if( isBoolean(node->son[0]->dataType) || isBoolean(node->son[1]->dataType) )
 			{
 				fprintf(stderr, "Linha %i: Operando inválido em operação aritmética\n", node->line);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			node->dataType = node->son[0]->dataType;
 			if (node->son[0]->dataType != node->son[1]->dataType )
@@ -349,7 +351,7 @@ void checkOperands(AST* node){
 			if( isBoolean(node->son[0]->dataType) || isBoolean(node->son[1]->dataType) )
 			{
 				fprintf(stderr, "Linha %i: Operando inválido em operação aritmética\n", node->line);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			node->dataType = node->son[0]->dataType;
 			if (node->son[0]->dataType != node->son[1]->dataType )
@@ -370,7 +372,7 @@ void checkOperands(AST* node){
 			if ( !isBoolean(node->son[0]->dataType) || !isBoolean(node->son[1]->dataType) )
 			{
 				fprintf(stderr, "Linha %i: expressão booleana inválida.\n", node->line);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			node->dataType = AST_BOOL;
 			break;
@@ -380,7 +382,7 @@ void checkOperands(AST* node){
 			if ( !isBoolean(node->son[0]->dataType) || !isBoolean(node->son[1]->dataType) )
 			{
 				fprintf(stderr, "Linha %i: expressão booleana inválida \n", node->line);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			node->dataType = AST_BOOL;
 			break;
@@ -389,7 +391,7 @@ void checkOperands(AST* node){
 			if ( !isBoolean(node->son[0]->dataType) )
 			{
 				fprintf(stderr, "Linha %i: uso inválido do NOT \n", node->line);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			node->dataType = AST_BOOL;
 			break;
@@ -398,7 +400,7 @@ void checkOperands(AST* node){
 			if ( (node->son[0] != 0) ||  (node->son[1] != 0) || (node->son[2] != 0) || (node->son[3] != 0) )
 			{
 				fprintf(stderr, "Linha %i :uso inválido do Leap.\n", node->line);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			break;
 
@@ -407,7 +409,7 @@ void checkOperands(AST* node){
 			if( node->symbol->datatype != node->son[0]->dataType || node->symbol->type != SYMBOL_SCALAR)
 			{
 				fprintf(stderr, "Linha %i: Não foi possível fazer atribuição em  %s.\n", node->line, node->symbol->text);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			node->dataType = node->symbol->datatype;
 			break;
@@ -417,12 +419,12 @@ void checkOperands(AST* node){
 			if ( !isInt(node->son[0]->dataType) )
 			{
 					fprintf(stderr, "Linha %i: tamanho do array %s precisa ser inteiro\n", node->line, node->symbol->text);
-					SemanticErrorFlag = 1;
+					SemanticErr = 1;
 			}
 			if (node->symbol->datatype != node->son[1]->dataType || node->symbol->type != SYMBOL_ARRAY)
 			{
 				fprintf(stderr, "Linha %i: Array %s precisa ter tipo compatível para atribuição \n", node->line, node->symbol->text);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			node->dataType = node->symbol->datatype;
 			break;
@@ -432,7 +434,7 @@ void checkOperands(AST* node){
 			if (node->symbol->type != SYMBOL_SCALAR)
 			{
 				fprintf(stderr, "Linha %i: parâmetro de READ precisa ser escalar \n", node->line);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			break;
 
@@ -441,7 +443,7 @@ void checkOperands(AST* node){
 			if (err == 1)
 			{
 				fprintf(stderr, "Linha %i: Parâmetros de print precisam ser strings \n", node->line);
-				SemanticErrorFlag  = 1;
+				SemanticErr  = 1;
 			}
 			break;
 
@@ -449,7 +451,7 @@ void checkOperands(AST* node){
 			if(node->son[0]->dataType == AST_BOOL)
 			{
 				fprintf(stderr, "Linha %i: Retorno da expressão não pode ser booleano \n", node->line);
-				SemanticErrorFlag;
+				SemanticErr = 1;
 			}
 			node->dataType = node->son[0]->dataType;
 			break;
@@ -461,7 +463,7 @@ void checkOperands(AST* node){
 			if( !isBoolean(node->son[0]->dataType) )
 			{
 				fprintf(stderr, "Linha %i: Controle de fluxo precisa ter retorno booleano \n", node->line);
-				SemanticErrorFlag = 1;
+				SemanticErr = 1;
 			}
 			break;
 
@@ -570,7 +572,7 @@ int checkFunctionParams(AST* node)
 	}
 	def = getFunctionDef(rNode, node);
 
-    if(!def) return 1;
+    //if(!def) return 1;
 
 	if( node->son[0] == 0 && def->son[1] == 0 )
 	{
@@ -625,11 +627,10 @@ AST* getFunctionDef(AST* rNode, AST* node)
 			return getFunctionDef(rNode->son[1], node);
 		break;
 		case AST_DEC_FUNC_LIST:
-             if(rNode->son[1] == 0) return;
-             if(rNode->son[1]->symbol == 0) return;
-			if( strcmp(rNode->son[1]->symbol->text, node->symbol->text) == 0 )
+
+			if( strcmp(rNode->son[0]->son[0]->symbol->text, node->symbol->text) == 0 )
 			{
-				return rNode->son[1];
+				return rNode->son[0]->son[0];
 			}
 		break;
 		default:
