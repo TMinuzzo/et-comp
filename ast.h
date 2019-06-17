@@ -2,6 +2,9 @@
 #ifndef AST_H
 #define AST_H
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "hash.h"
 
 #define MAX_SONS 4
@@ -66,7 +69,7 @@
 #define AST_LIT_STRING	52
 #define AST_DEC_VAR_LIST 53
 
-#define AST_BOOL 100
+#define AST_BOOL 1000
 
 typedef struct ast_node{
 	int type;
@@ -77,7 +80,6 @@ typedef struct ast_node{
 	int line;
 } AST;
 
-FILE *out;
 AST* astCreate(int type, NODE* symbol, AST* son0, AST* son1, AST* son2, AST* son3, int line);
 void astPrint(AST* node, int level);
 void compile(AST*node, FILE* out);

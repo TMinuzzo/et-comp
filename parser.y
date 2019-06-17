@@ -5,7 +5,9 @@
 	#include "hash.h"
 	#include "ast.h"
 	#include "semantic.h"
+	#include "tacs.h"
 
+	FILE* out= NULL;
 	void yyerror(char const *s);
 	int yylex();
 	int getLineNumber();
@@ -117,13 +119,14 @@
 				setDeclaration($1);
 				checkUndeclared();
 				checkOperands($1);
-				if(out != NULL && SemanticErr != 1){ compile($1, out) ; }
+				tacPrintForward (tacReverse( tacGenerate($1,0) ) );
+				//if(out != NULL && SemanticErr != 1){ compile($1, out) ; }
 			} 
 		   ;
 
 	declist: 
 		    dec_var declist				{ $$ = astCreate(AST_DEC_VAR_LIST, 0, $1, $2, 0, 0, getLineNumber()); }
-			|	function declist 			{ $$ = astCreate(AST_DEC_FUNC_LIST, 0, $1, $2, 0, 0, getLineNumber()); } 
+			|	header declist 			{ $$ = astCreate(AST_DEC_FUNC_LIST, 0, $1, $2, 0, 0, getLineNumber()); } 
 		   | 								{ $$ = 0; }
 		   ;		
 	dec_function:  function						{ $$ = $1; }
@@ -156,7 +159,7 @@
 	function: header body										{ $$ = astCreate(AST_FUNCTION, 0, $1, $2, 0, 0, getLineNumber()); }
 			;
 
-	header: type TK_IDENTIFIER '(' params ')'					{ $$ = astCreate(AST_HEADER, $2, $1, $4, 0, 0, getLineNumber());  }
+	header: type TK_IDENTIFIER '(' params ')' body					{ $$ = astCreate(AST_HEADER, $2, $1, $4, $6, 0, getLineNumber());  }
 		  ;
 
 	body: block ';'												{ $$ = $1; }

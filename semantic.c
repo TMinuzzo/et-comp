@@ -12,7 +12,6 @@ void setDeclaration(AST* node){
 	if (rootNode == 0)
     {
         rootNode = node;
-        fprintf(stderr, "ROOT NODE!!!! %d\n",rootNode->type);
     }
 	for(i = 0; i < MAX_SONS; i++)
     {
@@ -190,25 +189,20 @@ void checkOperands(AST* node){
 			}
 			node->dataType = node->symbol->datatype;
 		    break;
-
-		case AST_ARRAY:
-            if(node->symbol == 0){return;}
-			if(  isFloat(node->son[0]->dataType) || isBoolean(node->son[0]->dataType) )
-            {
-				fprintf(stderr, "Linha %i: Array %s precisa ser inicializado com um valor inteiro\n",node->line, node->symbol->text);
-				SemanticErr = 1;
-			}
-			node->dataType = node->symbol->datatype;
-		    break;
-        /*
-		case AST_DEC_VEC_INIT:
-			if( isFloat(node->son[1]->dataType) || isBoolean(node->son[1]->dataType) )
+			
+		case AST_GLOBAL_DEC:
+			if(node->symbol == 0){return;}
+			if( isFloat(node->son[1]->son[0]->dataType) || isBoolean(node->son[1]->son[0]->dataType) )
             {
 				fprintf(stderr, "[SEMANTIC] - Line %i: Size in array %s must be an integer\n",node->line, node->symbol->text);
 				SemanticErr = 1;
 			}
-			node->dataType = node->symbol->datatype;
-			err = checkArray(node);
+			
+			node->son[1]->dataType = node->symbol->datatype;
+
+			if(node->son[1]->son[1] == 0) { break; }
+
+			err = checkArray(node->son[1]);
 			switch (err) 
             {
 				case 1:
@@ -226,7 +220,7 @@ void checkOperands(AST* node){
 				default : break;
 			}
 		    break;
-		*/
+		
 		case AST_HEADER:
             if(node->symbol == 0){return;}
 			node->dataType = node->symbol->datatype;
@@ -297,6 +291,7 @@ void checkOperands(AST* node){
 			break;
 
 		case AST_ADD:
+
 			if( isBoolean(node->son[0]->dataType) || isBoolean(node->son[1]->dataType) )
 			{
 				fprintf(stderr, "Linha %i: Operando inválido em operação aritmética\n", node->line);
@@ -369,7 +364,7 @@ void checkOperands(AST* node){
 		case AST_LE:
 		case AST_GE:
 		case AST_EQ:
-			if ( !isBoolean(node->son[0]->dataType) || !isBoolean(node->son[1]->dataType) )
+			if ( isBoolean(node->son[0]->dataType) || isBoolean(node->son[1]->dataType) )
 			{
 				fprintf(stderr, "Linha %i: expressão booleana inválida.\n", node->line);
 				SemanticErr = 1;
@@ -379,7 +374,7 @@ void checkOperands(AST* node){
 		
 		case AST_AND:
 		case AST_OR:
-			if ( !isBoolean(node->son[0]->dataType) || !isBoolean(node->son[1]->dataType) )
+			if ( isBoolean(node->son[0]->dataType) || isBoolean(node->son[1]->dataType) )
 			{
 				fprintf(stderr, "Linha %i: expressão booleana inválida \n", node->line);
 				SemanticErr = 1;
@@ -388,7 +383,7 @@ void checkOperands(AST* node){
 			break;
 
 		case AST_NOT:
-			if ( !isBoolean(node->son[0]->dataType) )
+			if ( isBoolean(node->son[0]->dataType) )
 			{
 				fprintf(stderr, "Linha %i: uso inválido do NOT \n", node->line);
 				SemanticErr = 1;
@@ -416,7 +411,7 @@ void checkOperands(AST* node){
 
 		case AST_ARR_ATTRIB:
             if(node->symbol == 0){return;}
-			if ( !isInt(node->son[0]->dataType) )
+			if ( !isInt(node->son[0]->son[0]->dataType) )
 			{
 					fprintf(stderr, "Linha %i: tamanho do array %s precisa ser inteiro\n", node->line, node->symbol->text);
 					SemanticErr = 1;
@@ -459,7 +454,7 @@ void checkOperands(AST* node){
 		case AST_IF:
 		case AST_IF_ELSE:
 		case AST_LOOP:
-			node->line = node->son[1]->line;
+			//node->line = node->son[1]->line;
 			if( !isBoolean(node->son[0]->dataType) )
 			{
 				fprintf(stderr, "Linha %i: Controle de fluxo precisa ter retorno booleano \n", node->line);
@@ -822,16 +817,17 @@ int sizeAndInitialisationArray(AST* param, int* sizeArray, int arrayType)
 {
 	if(!param)
     {
+		if(*sizeArray == 0) return 0;
         return 1;
     }
 	if( param->type == AST_ARRAY_VALUE)
     {
-		if(param->son[1]->dataType != arrayType)
+		if(param->son[0]->dataType != arrayType)
         {
 			return 1;
         }
 		*sizeArray = *sizeArray - 1;
-		return sizeAndInitialisationArray(param->son[0], sizeArray, arrayType);
+		return sizeAndInitialisationArray(param->son[1], sizeArray, arrayType);
 	}
 	if(param->dataType != arrayType)
     {
@@ -850,8 +846,8 @@ int sizeAndInitialisationArray(AST* param, int* sizeArray, int arrayType)
 */
 int checkArray(AST* node)
 {
-		int size = (int)node->son[1]->value;
-		AST* params = node->son[2];
+		int size = (int)node->son[0]->value;
+		AST* params = node->son[1];
 		int ok = 0;
 		ok = sizeAndInitialisationArray(params, &size, node->dataType);
 		if (ok)

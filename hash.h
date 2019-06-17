@@ -16,7 +16,7 @@
 
 #define DATATYPE_INT 100
 #define DATATYPE_BYTE 200
-#define DATATYPE_FLOAT 3003
+#define DATATYPE_FLOAT 300
 #define DATATYPE_STRING 400
 
 
@@ -36,5 +36,9 @@ NODE* hashInsert(int type, char *text);
 NODE* hashFind(char* text);
 int hashAddress(char *text);
 void hashCheckUndeclared(void);
+
+NODE* makeTemp();
+NODE* makeLabel();
+
 
 #endif
