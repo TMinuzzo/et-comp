@@ -66,7 +66,7 @@ TAC* tacGenerate(AST *node, NODE *jmpLeapLoop){
         break;
     // a chamada de função
       case AST_FUNC_CALL:
-        return makeCallFunction(node, result[0]);
+        return callFunction(node, result[0]);
         break;
     // os argumentos da chamada de função
       case AST_ARGS:
@@ -154,12 +154,11 @@ TAC* tacGenerate(AST *node, NODE *jmpLeapLoop){
 TAC* funcDeclaration(AST *node, TAC *params, TAC *block)
 {
   if(!node) return 0;
-  //NODE *fBegin = makeLabel();
-  fprintf(stderr,"funcDeclaration1 \n");
-  //NODE *fEnd = makeLabel();
+  NODE *fBegin = makeLabel();
+  NODE *fEnd = makeLabel();
 
-  TAC *funBegin = tacCreate(TAC_BEGINFUN, node->symbol, 0 , 0, (int)node->value);
-  TAC *funEnd = tacCreate(TAC_ENDFUN, node->symbol,0,0, 0);
+  TAC *funBegin = tacCreate(TAC_BEGIN_FUN, node->symbol, 0 , 0, (int)node->value);
+  TAC *funEnd = tacCreate(TAC_END_FUN, node->symbol,0,0, 0);
 
   return tacJoin(tacJoin( tacJoin(funBegin,params), block), funEnd);
 }
@@ -266,10 +265,10 @@ void tacPrintSingle(TAC *tac)
     case TAC_CALL_PARAM:
         fprintf(stderr, "\nTAC_CALL_PARAM ");
         break;
-    case TAC_BEGINFUN:
+    case TAC_BEGIN_FUN:
         fprintf(stderr, "\nTAC_FUNC_BEGIN ");
         break;
-    case TAC_ENDFUN:
+    case TAC_END_FUN:
         fprintf(stderr, "\nTAC_FUNC_END ");
         break;
     case TAC_LABEL :
@@ -336,9 +335,8 @@ TAC* tacJoin(TAC *t1, TAC *t2)
   return t2;
 }
 
-TAC* tacReverse(TAC *tac)
+TAC* tacInvert(TAC *tac)
 {
-  fprintf(stderr, "reverse\n");
   if(!tac)
   {
     return 0;
@@ -444,7 +442,7 @@ int sameType(AST *tempnode, TAC *aux)
     return 0;
 }
 
-TAC* makeCallFunction(AST* node, TAC* listParam)
+TAC* callFunction(AST* node, TAC* listParam)
 {
   int numParams = (int)node->value;
   int i = 0;

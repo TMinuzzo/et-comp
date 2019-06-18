@@ -80,30 +80,24 @@ void hashCheckUndeclared(void){
 
 }
 
-/*
-	Funcition: Cria registro temporario na hash
-	Return: Retorna o ponteiro para nodo que armazena
-*/
-NODE* makeTemp()
-{
-
-	static int serial = 0;
-	static char name[100];
-	sprintf(name, "mYStrnG3rBufF3R", serial++);
-	return hashInsert(name, SYMBOL_SCALAR);
-}
-
-/*
-	Funcition: Cria label na hash
-	Return: Retorna o ponteiro para nodo que armazena
-*/
+// Cria label na hash
 NODE* makeLabel()
 {
 	static int serial = 0;
 	static char name[100];
 	sprintf(name, "L@b3lF0rT@cs__%d", serial++);
-	return hashInsert(name, SYMBOL_SCALAR);
-
+	return hashInsert(SYMBOL_SCALAR, name);
 }
+
+// cria registro temporario na hashs
+NODE* makeTemp()
+{
+
+	static int serial = 0;
+	static char name[100];
+	sprintf(name, "mYStrnG3rBufF3R__%d", serial++);
+	return hashInsert(SYMBOL_SCALAR, name);
+}
+
 
 

@@ -5,7 +5,7 @@
 	#include "hash.h"
 	#include "ast.h"
 	#include "semantic.h"
-	#include "tacs.h"
+	//#include "tacs.h"
 
 	FILE* out= NULL;
 	void yyerror(char const *s);
@@ -119,7 +119,7 @@
 				setDeclaration($1);
 				checkUndeclared();
 				checkOperands($1);
-				tacPrintForward (tacReverse( tacGenerate($1,0) ) );
+				//tacPrintForward (tacInvert( tacGenerate($1,0) ) );
 				//if(out != NULL && SemanticErr != 1){ compile($1, out) ; }
 			} 
 		   ;

@@ -1,6 +1,6 @@
-etapa5: lex.yy.o hash.o y.tab.o ast.o tacs.o semantic.o 
+etapa5: lex.yy.o hash.o y.tab.o ast.o semantic.o tacs.o
 	@echo "\n Link parser"
-	gcc -o etapa5 lex.yy.o hash.o y.tab.o ast.o tacs.o semantic.o
+	gcc -o etapa5 lex.yy.o hash.o y.tab.o ast.o semantic.o tacs.o
 ast.o: ast.c
 	gcc -c ast.c
 hash.o: hash.c
@@ -19,7 +19,7 @@ tacs.o: tacs.c
 	gcc -c tacs.c
 
 zip:
-	tar cvzf etapa3.tgz Makefile main.c parser.y scanner.l hash.c hash.h ast.c ast.h semantic.c semantic.h tac.c tac.h
+	tar cvzf etapa5.tgz Makefile main.c parser.y scanner.l hash.c hash.h ast.c ast.h semantic.c semantic.h tacs.c tacs.h
 
 clean:
-	rm -f *.o lex.yy.* y.tab.*  etapa5
+	rm -f *.o lex.yy.* y.tab.* etapa5

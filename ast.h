@@ -69,7 +69,7 @@
 #define AST_LIT_STRING	52
 #define AST_DEC_VAR_LIST 53
 
-#define AST_BOOL 1000
+#define AST_BOOL 1000 
 
 typedef struct ast_node{
 	int type;

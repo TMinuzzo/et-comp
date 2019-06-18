@@ -5,10 +5,8 @@ AST* rootNode = 0;
 
 void setDeclaration(AST* node){
 	int i;
-	if (node == 0)
-    {
-        return;
-    }
+	if (node == 0){ return; }
+
 	if (rootNode == 0)
     {
         rootNode = node;
@@ -19,6 +17,7 @@ void setDeclaration(AST* node){
     }
 	switch(node->type)
     {
+		//declaração de variavel global
 		case AST_GLOBAL_DEC_INIT:
 			if (node->symbol == 0 && node->son[0])
             {
@@ -63,7 +62,7 @@ void setDeclaration(AST* node){
             }
 			node->dataType  = node->symbol->datatype;
 		break;
-
+		// declaração de função
 		case AST_HEADER:
 			if (node->symbol == 0  && node->son[0])
             {
@@ -85,7 +84,7 @@ void setDeclaration(AST* node){
             }
 			node->dataType  = node->symbol->datatype;
 		break;
-
+		// parametro passado para funcaos
 		case AST_PARAM:
 			if (node->symbol == 0  && node->son[0])
             {
@@ -115,12 +114,7 @@ void checkUndeclared(){
 	hashCheckUndeclared();
 }
 
-/*
-	Funcition: Realiza a checagem do uso correto das expressões conforme a operação associada
-	Parameters:
-		AST* node: Ponteiro para nodo a ser analisado
-	Return: Não retorna nenhum valor, mas altera a variavel global "SemanticErr" para 1 se identificar erro
-*/
+// checahem do uso correto dos operandos
 void checkOperands(AST* node){
 	int i;
 	int err;
@@ -194,7 +188,7 @@ void checkOperands(AST* node){
 			if(node->symbol == 0){return;}
 			if( isFloat(node->son[1]->son[0]->dataType) || isBoolean(node->son[1]->son[0]->dataType) )
             {
-				fprintf(stderr, "[SEMANTIC] - Line %i: Size in array %s must be an integer\n",node->line, node->symbol->text);
+				fprintf(stderr, "Linha %i: Tamanho do array %s precisa ser um inteiro\n",node->line, node->symbol->text);
 				SemanticErr = 1;
 			}
 			
@@ -206,21 +200,21 @@ void checkOperands(AST* node){
 			switch (err) 
             {
 				case 1:
-					fprintf(stderr, "[SEMANTIC] - Line %i: Array %s initialisation must have all elements the same type as the array.\n", node->line, node->symbol->text);
+					fprintf(stderr, "Linha %i: Inicialização do array %s precisa ter todos os elementos do mesmo tipo.\n", node->line, node->symbol->text);
 					SemanticErr = 1;
 				    break;
 				case 2:
-				 	fprintf(stderr,"[SEMANTIC] - Line %i:Array %s is missing parameters \n", node->line, node->symbol->text);
+				 	fprintf(stderr,"Linha %i: Array %s tem parâmetros faltando \n", node->line, node->symbol->text);
 					SemanticErr = 1;
 				    break;
 				case 3:
-					fprintf(stderr,"[SEMANTIC] - Line %i: Array %s has too much parameters \n", node->line, node->symbol->text);
+					fprintf(stderr,"Linha %i: Array %s te parâmetros sobrando \n", node->line, node->symbol->text);
 					SemanticErr = 1;
 				    break;
 				default : break;
 			}
 		    break;
-		
+		// TK_IDENTIFIER
 		case AST_HEADER:
             if(node->symbol == 0){return;}
 			node->dataType = node->symbol->datatype;
@@ -254,7 +248,7 @@ void checkOperands(AST* node){
 		case AST_ARR_POS:
             if(node->symbol == 0){return;}
 
-			if ( node->son[0]->type !=  AST_LIT_INTEGER)
+			if ( isFloat(node->son[0]->dataType) || isBoolean(node->son[0]->dataType))
 			{
 				fprintf(stderr, "Linha %i: Expressão no array %s precisa ser um inteiro.\n", node->line, node->symbol->text);
 				SemanticErr = 1;
@@ -364,18 +358,15 @@ void checkOperands(AST* node){
 		case AST_LE:
 		case AST_GE:
 		case AST_EQ:
-			if ( isBoolean(node->son[0]->dataType) || isBoolean(node->son[1]->dataType) )
-			{
-				fprintf(stderr, "Linha %i: expressão booleana inválida.\n", node->line);
-				SemanticErr = 1;
-			}
-			node->dataType = AST_BOOL;
-			break;
-		
 		case AST_AND:
 		case AST_OR:
-			if ( isBoolean(node->son[0]->dataType) || isBoolean(node->son[1]->dataType) )
+			if ( isBoolean(node->son[0]->dataType) || isBoolean(node->son[1]->dataType ) )
 			{
+				if((node->son[0]->type == AST_OR || AST_AND) || (node->son[1]->type == AST_OR || AST_AND) )
+				{
+					node->dataType = AST_BOOL;
+					return;
+				}
 				fprintf(stderr, "Linha %i: expressão booleana inválida \n", node->line);
 				SemanticErr = 1;
 			}
@@ -454,10 +445,10 @@ void checkOperands(AST* node){
 		case AST_IF:
 		case AST_IF_ELSE:
 		case AST_LOOP:
-			//node->line = node->son[1]->line;
+			if(!node->son[0]) return;
 			if( !isBoolean(node->son[0]->dataType) )
 			{
-				fprintf(stderr, "Linha %i: Controle de fluxo precisa ter retorno booleano \n", node->line);
+				fprintf(stderr, "Controle de fluxo precisa ter retorno booleano \n");
 				SemanticErr = 1;
 			}
 			break;
@@ -467,12 +458,7 @@ void checkOperands(AST* node){
 	}
 }
 
-/*
-	Funcition: Valida de um tipo pode ser tratado como inteiro
-	Parameters:
-		int type: Identificador de tipo
-	Return: Retorna 1 é equivalente a inteiro e 0 caso contrario
-*/
+//verifica se intteiro
 int isInt(int type)
 {
 	switch(type)
@@ -494,12 +480,7 @@ int isInt(int type)
 	}
 }
 
-/*
-	Funcition: Valida de um tipo pode ser tratado como float
-	Parameters:
-		int type: Identificador de tipo
-	Return: Retorna 1 é equivalente a float e 0 caso contrario
-*/
+//verifica se flutuante
 int isFloat(int type)
 {
 	switch(type)
@@ -514,12 +495,7 @@ int isFloat(int type)
 	}
 }
 
-/*
-	Funcition: Valida de um tipo pode ser tratado como boleano
-	Parameters:
-		int type: Identificador de tipo
-	Return: Retorna 1 é equivalente a boleano e 0 caso contrario
-*/
+//verifica se booleano
 int isBoolean(int type)
 {
 	switch(type)
@@ -547,12 +523,6 @@ int isBoolean(int type)
 	}
 }
 
-/*
-	Funcition: Checa parametros de função
-	Parameters:
-		AST* node: Ponteiro para nodo da ast a ser checado
-	Return: Retorna 0 se correto e 1 se ocorreu erro
-*/
 int checkFunctionParams(AST* node)
 {
 	AST* rNode = rootNode;
@@ -566,8 +536,7 @@ int checkFunctionParams(AST* node)
 		return 1;
 	}
 	def = getFunctionDef(rNode, node);
-
-    //if(!def) return 1;
+    if(!def) return 1;
 
 	if( node->son[0] == 0 && def->son[1] == 0 )
 	{
@@ -597,13 +566,6 @@ int checkFunctionParams(AST* node)
 	return compareFunctionDef(def, node);
 }
 
-/*
-	Funcition: Busca a definição da função na ast
-	Parameters:
-		AST* rNode: Ponteiro para o root node da ast
-		AST* node: Ponteiro para o nodo a ser analisado
-	Return: Retorna o ponteiro para o nodo da ast se achar. Caso contrario retorna 0
-*/
 AST* getFunctionDef(AST* rNode, AST* node)
 {
 	if (rNode == 0)
@@ -615,6 +577,7 @@ AST* getFunctionDef(AST* rNode, AST* node)
 	switch ( rNode->type )
 	{
 		case AST_DEC_VAR_LIST:
+
 			if( strcmp(rNode->son[0]->symbol->text, node->symbol->text) == 0 )
 			{
 				return rNode->son[0];
@@ -623,9 +586,9 @@ AST* getFunctionDef(AST* rNode, AST* node)
 		break;
 		case AST_DEC_FUNC_LIST:
 
-			if( strcmp(rNode->son[0]->son[0]->symbol->text, node->symbol->text) == 0 )
+			if( strcmp(rNode->son[0]->symbol->text, node->symbol->text) == 0 )
 			{
-				return rNode->son[0]->son[0];
+				return rNode->son[0];
 			}
 		break;
 		default:
@@ -634,13 +597,6 @@ AST* getFunctionDef(AST* rNode, AST* node)
 	return getFunctionDef(rNode->son[0], node);
 }
 
-/*
-	Funcition: Compara definição de função com utilização
-	Parameters: 
-		AST* def: Ponteiro para nodo de definição na ast
-		AST* node: Ponteiro para nodo de utilização na ast
-	Return: Retorna 1 se uso e declarações são equivalentes e 0 se não
-*/
 int compareFunctionDef(AST* def, AST* node)
 {
 	if ( def == 0 )
@@ -677,12 +633,6 @@ int compareFunctionDef(AST* def, AST* node)
 }
 
 
-/*
-	Funcition: Checa parametros do comando print
-	Parameters: 
-		AST* node: Ponteiro da ast a ser analisado
-	Return: Retorna 1 se correto, senão 0
-*/
 int checkPrintParams(AST* node)
 {
 	if( node == 0)
@@ -707,12 +657,7 @@ int checkPrintParams(AST* node)
 	}
 }
 
-/*
-	Funcition: Checa se o nodo é uma expressão
-	Parameters:
-		AST* node: Ponteiro da ast a ser analisado
-	Return: Retorna 1 se correto, senão 0
-*/
+
 int isExpr(AST* node)
 {
 	if (node == 0)
@@ -747,12 +692,7 @@ int isExpr(AST* node)
 	}
 }
 
-/*
-	Funcition: Realiza a conversão de codigos literias para inteiro conforme definição do trabalho
-	Parameters:
-		char* stringIn: String a ser convertida
-	Return: Retorna string equivalente
-*/
+
 char* convertValueToNumberString(char* stringIn)
 {
     char* stringToAppend;
@@ -806,13 +746,7 @@ char* convertValueToNumberString(char* stringIn)
     return stringOut;
 }
 
-/*
-	Funcition: Valida tamanho e inicialização do array
-	Parameters:
-		AST* param: Ponteiro para nodo a ast de parametro
-		int* sizeArray: Tamanho do array
-		int arrayType: Identificador de tipo de array
-*/
+
 int sizeAndInitialisationArray(AST* param, int* sizeArray, int arrayType)
 {
 	if(!param)
@@ -838,12 +772,7 @@ int sizeAndInitialisationArray(AST* param, int* sizeArray, int arrayType)
 
 }
 
-/*
-	Funcition: Valida array
-	Parameters:
-		AST* param: Ponteiro para nodo a ast a ser analisado
-	Return: 0 se ok, positivo(há mais elementos que declarados) ou negativo(há menos elementos que declarados) se erro
-*/
+
 int checkArray(AST* node)
 {
 		int size = (int)node->son[0]->value;
@@ -868,12 +797,7 @@ int checkArray(AST* node)
 		}
 }
 
-/*
-	Funcition: Verifica se a função possui um retorno de valor condizente com o declarado
-	Parameters:
-		AST* node: Ponteiro para nodo a ast a ser analisado 
-	Return:  0 se ok senão 1
-*/
+
 int correctFunctionReturn(AST* node)
 {
 	if (node->son[2]==0)
@@ -888,13 +812,7 @@ int correctFunctionReturn(AST* node)
 	return (getFunctionReturn(first,node->son[0]->dataType));
 }
 
-/*
-	Funcition: Verifica se a função possui um retorno de valor condizente com o declarado
-	Parameters:
-		AST* node: Ponteiro para nodo a ast a ser analisado 
-		int funcDataType: Identificador de tipo de dado declarado como retorno da função
-	Return:  0 se ok senão 1
-*/
+
 int getFunctionReturn(AST* node, int funcDataType)
 {
 	int r, l;

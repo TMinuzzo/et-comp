@@ -18,6 +18,7 @@
 #define DATATYPE_BYTE 200
 #define DATATYPE_FLOAT 300
 #define DATATYPE_STRING 400
+#define DATATYPE_CHAR 500
 
 
 typedef struct hash_node

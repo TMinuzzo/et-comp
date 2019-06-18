@@ -17,17 +17,17 @@ int main(int argc, char** argv)
 	FILE* output;
   if (argc < 3)
   {
-    printf("[CALL_ERROR] - call: ./etapa4 <input> <output>\n");
+    printf("Erro: ./etapa4 <input> <output>\n");
     exit(1);
   }
   if (0==(yyin = fopen(argv[1],"r")))
   {
-    printf("[FILE_ERROR] - Cannot open file %s\n",argv[1]);
+    printf("Não foi possível abrir arquivo %s\n",argv[1]);
     exit(2);
   }
   if (0==(output = fopen(argv[2],"w")))
   {
-    printf("[FILE_ERROR] - Cannot create file %s\n",argv[2]);
+    printf("Não foi possível criar arquivo %s\n",argv[2]);
     exit(2);
   }
   defineOut(output);
@@ -36,6 +36,6 @@ int main(int argc, char** argv)
   {
     exit(4);
   }
-  printf("[SUCCESS] - Compilation end.\n");
+  printf(" \nSucesso! :D - \n Compilation end.\n");
   return 0;
 }

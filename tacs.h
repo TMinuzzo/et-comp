@@ -37,8 +37,8 @@
 #define TAC_SYMBOL_VEC 27
 #define TAC_IFZ_ELSE 28
 #define TAC_SYMBOL_KW 29
-#define TAC_BEGINFUN 30
-#define TAC_ENDFUN 31
+#define TAC_BEGIN_FUN 30
+#define TAC_END_FUN 31
 #define TAC_VEC_MOV 32
 #define TAC_PRINT_PARAM 33
 #define TAC_FUNC_PARAM 34
@@ -46,8 +46,8 @@
 #define TAC_LOOP 36
 #define TAC_LABEL_LEAP 37
 
-#define TAC_DEC_VAR 38
-#define TAC_DEC_VEC 39
+#define TAC_DEC_VAR 50
+#define TAC_DEC_VEC 51
 
 typedef struct tac{
   int type;
@@ -66,12 +66,11 @@ void tacPrintSingle(TAC *tac);
 void tacPrintBackwards(TAC *tac);
 TAC* tacJoin(TAC *t1, TAC *t2);
 
-TAC* tacReverse(TAC *tac);
+TAC* tacInvert(TAC *tac);
 void tacPrintForward(TAC *tac);
 int sameType(AST *tempnode, TAC *aux);
 TAC* funcDeclaration(AST *node, TAC* params, TAC *block);
-TAC* makeCallFunction(AST* node, TAC* listParam);
-int sameType(AST *tempnode, TAC *aux);
+TAC* callFunction(AST* node, TAC* listParam);
 TAC *makeBinOp(int op, TAC *result0, TAC *result1);
 TAC* makeLeap(NODE *jmpLeap);
 TAC* makeLoop(TAC *expr, TAC *cmd, NODE *jmpLeapLoop);
