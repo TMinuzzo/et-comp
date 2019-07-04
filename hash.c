@@ -35,7 +35,6 @@ NODE* hashInsert(int type, char *text)
 
 	newNode = (NODE*)calloc(1, sizeof(NODE));
 	newNode->type = type;
-	newNode->nature = -1;
 	newNode->text = calloc(strlen(yytext) + 1, sizeof(char));
 	strcpy(newNode->text, text);
 	newNode->next = Table[address];
@@ -66,3 +65,39 @@ void hashPrint(void)
 			fprintf(stderr, "Table[%d] has %s\n", i, node->text);
 	}
 }
+
+void hashCheckUndeclared(void){
+	NODE *node;
+
+	int i;
+	for (i = 0; i < HASH_SIZE; i++){
+			for( node = Table[i]; node; node = node->next){
+				if (node->type == SYMBOL_IDENTIFIER){
+					fprintf(stderr, " Símbolo [%s] não declarado \n",node->text);
+				}
+			}
+	}
+
+}
+
+// Cria label na hash
+NODE* makeLabel()
+{
+	static int serial = 0;
+	static char name[100];
+	sprintf(name, "L@b3lF0rT@cs__%d", serial++);
+	return hashInsert(SYMBOL_SCALAR, name);
+}
+
+// cria registro temporario na hashs
+NODE* makeTemp()
+{
+
+	static int serial = 0;
+	static char name[100];
+	sprintf(name, "mYStrnG3rBufF3R__%d", serial++);
+	return hashInsert(SYMBOL_SCALAR, name);
+}
+
+
+

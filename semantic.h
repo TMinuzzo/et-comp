@@ -1,26 +1,34 @@
+
+#ifndef SEMANTIC_HEADER
+#define SEMANTIC_HEADER
+
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "ast.h"
+#include <string.h>
 #include "hash.h"
+#include "ast.h"
 
-#define VAR_FLOAT	600
-#define VAR_INT 	601
-#define VAR_BYTE	602
-#define LIT_STR		603
-#define LIT_INTEG	604
-#define LIT_FLOATING	605
-#define LIT_BYTE	606
-#define VAR_UNDECLARED	607
-#define VAR_BOOLEAN	608
+void setDeclaration(AST* node);
+void checkUndeclared();
+void checkOperands(AST* node);
+
+int isInt(int type);
+int isFloat(int type);
+int isBoolean(int type);
+int isExpr(AST* node);
+
+int checkFunctionParams(AST* node);
+int checkPrintParams(AST* node);
+AST* getFunctionDef(AST* rootNode, AST* node);
+int compareFunctionDef(AST* def, AST* node);
+
+int correctFunctionReturn(AST* node);
+int getFunctionReturn(AST* node, int funcDataType);
 
 
-int setAndCheckRedeclared(AST *node);
-int checkUndeclared(AST *node);
-int checkFunctions(AST *node);
-int checkAritExpressions(AST *node);
-int checkVectorIndex(AST *node);
-int checkStrings(AST *node);
-int checkVars(AST *node);
-int checkReturns(AST *node);
-int checkIfBooleans(AST *node);
+int checkArray(AST* node);
+int sizeAndInitialisationArray(AST* param, int* sizeArray, int arrayType);
+char* convertValueToNumberString(char* stringIn); 
+
+
+#endif
